@@ -22,6 +22,7 @@ type ShellView =
   | 'knowledge'
   | 'intelligence'
   | 'opportunities'
+  | 'onboarding'
   | 'projects'
   | 'chats'
   | 'configure';
@@ -151,10 +152,41 @@ const assets = {
   oppSelectBadge: `${ICONS}/opp-select-badge.svg`,
   oppTelescopeBarrel: `${ICONS}/opp-telescope-barrel.svg`,
   oppTelescopeTripod: `${ICONS}/opp-telescope-tripod.svg`,
+  onboardEudia: `${ICONS}/onboard-eudia.svg`,
+  loaderPinwheel: `${ICONS}/loader-pinwheel.svg`,
 } as const;
 
-function LucideIcon({name, size}: {name: 'folder' | 'folder-open'; size: number}) {
-  const src = `${ICONS}/lucide-${name}.svg`;
+const ONBOARD_TYPES = [
+  {id: 'sigma', name: 'General Assistant', icon: `${ICONS}/onboard/sigma.svg`},
+  {id: 'compliance', name: 'Compliance', icon: `${ICONS}/onboard/compliance.svg`},
+  {id: 'contracting', name: 'Contracting', icon: `${ICONS}/onboard/contracting.svg`},
+  {id: 'corp-governance', name: 'Corporate Governance', icon: `${ICONS}/onboard/corp-governance.svg`},
+  {id: 'intel-property', name: 'Intellectual Property', icon: `${ICONS}/onboard/intel-property.svg`},
+  {id: 'litigation', name: 'Litigation', icon: `${ICONS}/onboard/litigation.svg`},
+  {id: 'ma', name: 'M&A', icon: `${ICONS}/onboard/ma.svg`},
+  {id: 'real-estate', name: 'Real Estate', icon: `${ICONS}/onboard/real-estate.svg`},
+  {id: 'reg-compliance', name: 'Regulatory Compliance', icon: `${ICONS}/onboard/reg-compliance.svg`},
+  {id: 'solicitation', name: 'Solicitation', icon: `${ICONS}/onboard/solicitation.svg`},
+] as const;
+
+const ONBOARD_HOLD_MS = 1200;
+const ONBOARD_MOVE_MS = 400;
+const ONBOARD_NAME_FADE_MS = 140;
+
+function onboardSlot(index: number, center: number, count: number) {
+  let delta = ((index - center) % count + count) % count;
+  if (delta > Math.floor((count - 1) / 2)) delta -= count;
+  return delta;
+}
+
+function LucideIcon({
+  name,
+  size,
+}: {
+  name: 'folder' | 'folder-open' | 'loader-pinwheel';
+  size: number;
+}) {
+  const src = name === 'loader-pinwheel' ? assets.loaderPinwheel : `${ICONS}/lucide-${name}.svg`;
   return (
     <span
       className="proto-lucide"
@@ -558,7 +590,7 @@ function EmptyCanvas({
 }
 
 const PLACEHOLDERS: Record<
-  Exclude<ShellView, 'projects' | 'knowledge' | 'opportunities'>,
+  Exclude<ShellView, 'projects' | 'knowledge' | 'opportunities' | 'onboarding'>,
   {title: string; body: string}
 > = {
   assistant: {
@@ -852,6 +884,112 @@ function OpportunitiesPage(): ReactElement {
   );
 }
 
+function OnboardTypeSpinner(): ReactElement {
+  const count = ONBOARD_TYPES.length;
+  const [center, setCenter] = useState(0);
+  const [nameIn, setNameIn] = useState(true);
+  const prevSlots = useRef<number[]>(ONBOARD_TYPES.map((_, index) => onboardSlot(index, 0, count)));
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    let cancelled = false;
+    const timers: number[] = [];
+    const later = (fn: () => void, ms: number) => {
+      timers.push(window.setTimeout(fn, ms));
+    };
+
+    const loop = () => {
+      later(() => {
+        if (cancelled) return;
+        setNameIn(false);
+        later(() => {
+          if (cancelled) return;
+          setCenter((value) => (value + 1) % count);
+          later(() => {
+            if (cancelled) return;
+            setNameIn(true);
+            loop();
+          }, ONBOARD_MOVE_MS);
+        }, ONBOARD_NAME_FADE_MS);
+      }, ONBOARD_HOLD_MS);
+    };
+
+    loop();
+    return () => {
+      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [count]);
+
+  const slots = ONBOARD_TYPES.map((_, index) => onboardSlot(index, center, count));
+
+  useLayoutEffect(() => {
+    prevSlots.current = slots;
+  }, [center, slots]);
+
+  return (
+    <div className="onboard-spin">
+      <div className="onboard-spin__track" aria-hidden="true">
+        {ONBOARD_TYPES.map((item, index) => {
+          const slot = slots[index];
+          const abs = Math.abs(slot);
+          const prev = prevSlots.current[index] ?? slot;
+          const wrapping = Math.abs(slot - prev) > 4;
+          const isCenter = slot === 0;
+          return (
+            <div
+              key={item.id}
+              className={clsx(
+                'onboard-spin__tile',
+                isCenter && 'is-center',
+                wrapping && 'is-wrap',
+                abs > 3 && 'is-off',
+              )}
+              style={{'--slot': slot} as CSSProperties}
+            >
+              <img src={item.icon} alt="" width={36} height={36} />
+            </div>
+          );
+        })}
+        <div className="onboard-spin__fade onboard-spin__fade--left" />
+        <div className="onboard-spin__fade onboard-spin__fade--right" />
+      </div>
+      <p className={clsx('onboard-spin__name', nameIn && 'is-in')} aria-live="polite">
+        {ONBOARD_TYPES[center].name}
+      </p>
+    </div>
+  );
+}
+
+function OnboardingSpinnerPage({onHome}: {onHome: () => void}): ReactElement {
+  return (
+    <div className="onboard">
+      <header className="onboard__top">
+        <button className="onboard__logo" type="button" onClick={onHome} aria-label="Back to All projects">
+          <img src={assets.onboardEudia} alt="" width={24} height={24} />
+        </button>
+      </header>
+      <div className="onboard__body">
+        <div className="onboard__content">
+          <OnboardTypeSpinner />
+          <div className="onboard__copy">
+            <h1 className="onboard__title">All set, John!</h1>
+            <p className="onboard__desc">
+              These files become your fact library, containing the approved claims and entity details
+              Eudia uses to substantiate your compliance reviews. You can add more at any time.
+            </p>
+          </div>
+          <button className="onboard__cta" type="button" onClick={onHome}>
+            Get started
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AllProjectsApp(): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
   const [view, setView] = useState<ShellView>('projects');
@@ -975,6 +1113,12 @@ export default function AllProjectsApp(): ReactElement {
     litigation: 'Litigation',
   };
 
+  const goHome = () => setView('projects');
+
+  if (view === 'onboarding') {
+    return <OnboardingSpinnerPage onHome={goHome} />;
+  }
+
   return (
     <div className={clsx('proto-app', collapsed && 'proto-app--collapsed')}>
       <aside className="proto-sidebar">
@@ -1029,6 +1173,14 @@ export default function AllProjectsApp(): ReactElement {
             >
               <Icon src={assets.telescope} size={16} />
               <span className="proto-nav-btn__label">Opportunities</span>
+            </button>
+            <button
+              className="proto-nav-btn"
+              type="button"
+              onClick={() => setView('onboarding')}
+            >
+              <LucideIcon name="loader-pinwheel" size={16} />
+              <span className="proto-nav-btn__label">Onboarding Spinner</span>
             </button>
           </div>
 
