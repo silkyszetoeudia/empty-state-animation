@@ -1219,7 +1219,7 @@ function HorizonScanningPage(): ReactElement {
 }
 
 type AcqGlyphName = 'file-text' | 'hammer' | 'settings';
-type AcqVisual = 'waiting' | 'tile' | 'icon' | 'text' | 'done';
+type AcqVisual = 'waiting' | 'tile' | 'icon' | 'text' | 'done' | 'exit';
 type AcqScreen = 'paths' | 'building' | 'hub';
 
 const ACQ_SWAP_MS = 240;
@@ -1251,16 +1251,19 @@ const ACQ_PATHS = [
     id: 'open-market',
     title: 'Open-market competitive acquisition',
     body: 'Use FAR Part 12 with Part 15 when the strongest sources or required capabilities are outside MAS scope. It broadens industry access but generally adds solicitation and source-selection effort.',
+    recommended: false,
   },
   {
     id: 'bpa',
     title: 'Multiple-award MAS BPA',
     body: 'Consider when the wing expects repetitive analytics orders over time. A BPA can preserve ongoing competition, but its setup and administration are unnecessary for a single defined order.',
+    recommended: false,
   },
   {
     id: 'cso',
     title: 'Commercial Solutions Opening',
     body: 'Consider only if the need is an innovative capability gap and meaningfully different technical approaches are expected. The current intake reads as a defined support-services buy, so qualification is not yet',
+    recommended: false,
   },
 ] as const;
 
