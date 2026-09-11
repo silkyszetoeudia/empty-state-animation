@@ -28,6 +28,7 @@ type ShellView =
   | 'acquisition'
   | 'acq-fill'
   | 'onboarding'
+  | 'classic'
   | 'connectors'
   | 'twin'
   | 'projects'
@@ -183,6 +184,7 @@ const assets = {
   hsCalendar: `${ICONS}/hs-calendar.svg`,
   hsClockBadge: `${ICONS}/hs-clock-badge.svg`,
   onboardEudia: `${ICONS}/onboard-eudia.svg`,
+  onboardArrowRight: `${ICONS}/onboard/arrow-right.svg`,
   loaderPinwheel: `${ICONS}/loader-pinwheel.svg`,
   connLaptop: `${ICONS}/connectors/laptop.svg`,
   twinHalo: `${ICONS}/twin/brain-halo.svg`,
@@ -693,6 +695,7 @@ const PLACEHOLDERS: Record<
     | 'acquisition'
     | 'acq-fill'
     | 'onboarding'
+    | 'classic'
     | 'connectors'
     | 'twin'
   >,
@@ -1781,11 +1784,12 @@ function AcquisitionFillPage(): ReactElement {
   );
 }
 
-function OnboardTypeSpinner(): ReactElement {
-  const count = ONBOARD_TYPES.length;
+function useOnboardCarousel(count: number) {
   const [center, setCenter] = useState(0);
   const [nameIn, setNameIn] = useState(true);
-  const prevSlots = useRef<number[]>(ONBOARD_TYPES.map((_, index) => onboardSlot(index, 0, count)));
+  const prevSlots = useRef<number[]>(
+    Array.from({length: count}, (_, index) => onboardSlot(index, 0, count)),
+  );
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1822,14 +1826,22 @@ function OnboardTypeSpinner(): ReactElement {
     };
   }, [count]);
 
-  const slots = ONBOARD_TYPES.map((_, index) => onboardSlot(index, center, count));
+  const slots = Array.from({length: count}, (_, index) => onboardSlot(index, center, count));
 
   useLayoutEffect(() => {
     prevSlots.current = slots;
   }, [center, slots]);
 
+  return {center, nameIn, slots, prevSlots};
+}
+
+function OnboardTypeSpinner({variant = 'arc'}: {variant?: 'arc' | 'row'}): ReactElement {
+  const count = ONBOARD_TYPES.length;
+  const {center, nameIn, slots, prevSlots} = useOnboardCarousel(count);
+  const iconSize = variant === 'row' ? 75 : 46;
+
   return (
-    <div className="onboard-spin">
+    <div className={clsx('onboard-spin', variant === 'row' && 'onboard-spin--row')}>
       <div className="onboard-spin__track" aria-hidden="true">
         {ONBOARD_TYPES.map((item, index) => {
           const slot = slots[index];
@@ -1837,6 +1849,7 @@ function OnboardTypeSpinner(): ReactElement {
           const prev = prevSlots.current[index] ?? slot;
           const wrapping = Math.abs(slot - prev) > 4;
           const isCenter = slot === 0;
+          const offAfter = 3;
           return (
             <div
               key={item.id}
@@ -1844,11 +1857,11 @@ function OnboardTypeSpinner(): ReactElement {
                 'onboard-spin__tile',
                 isCenter && 'is-center',
                 wrapping && 'is-wrap',
-                abs > 3 && 'is-off',
+                abs > offAfter && 'is-off',
               )}
               style={{'--slot': slot} as CSSProperties}
             >
-              <img src={item.icon} alt="" width={46} height={46} />
+              <img src={item.icon} alt="" width={iconSize} height={iconSize} />
             </div>
           );
         })}
@@ -1884,6 +1897,51 @@ function OnboardingSpinnerPage({onHome}: {onHome: () => void}): ReactElement {
             Get started
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ClassicOnboardingPage({onHome}: {onHome: () => void}): ReactElement {
+  return (
+    <div className="classic">
+      <div className="classic__frame">
+        <div className="classic__main">
+          <section className="classic__copy">
+            <button
+              className="classic__logo"
+              type="button"
+              onClick={onHome}
+              aria-label="Back to All projects"
+            >
+              <img src={assets.onboardEudia} alt="" width={24} height={24} />
+            </button>
+            <div className="classic__intro">
+              <div className="classic__stepper" aria-hidden="true">
+                <span className="classic__step is-on" />
+                <span className="classic__step" />
+                <span className="classic__step" />
+                <span className="classic__step" />
+              </div>
+              <div className="classic__text">
+                <h1 className="classic__title">Welcome to Eudia</h1>
+                <p className="classic__desc">
+                  Eudia doesn't just deliver software — it delivers results. Our AI learns your
+                  business, connects your teams, and compounds value over time.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section className="classic__art" aria-label="Product types">
+            <OnboardTypeSpinner variant="row" />
+          </section>
+        </div>
+        <footer className="classic__footer">
+          <button className="classic__continue" type="button" onClick={onHome}>
+            Continue
+            <img src={assets.onboardArrowRight} alt="" width={16} height={16} />
+          </button>
+        </footer>
       </div>
     </div>
   );
@@ -2227,6 +2285,10 @@ export default function AllProjectsApp(): ReactElement {
     return <OnboardingSpinnerPage onHome={goHome} />;
   }
 
+  if (view === 'classic') {
+    return <ClassicOnboardingPage onHome={goHome} />;
+  }
+
   if (view === 'connectors') {
     return <OnboardingConnectorsPage onHome={goHome} />;
   }
@@ -2325,10 +2387,18 @@ export default function AllProjectsApp(): ReactElement {
             <button
               className="proto-nav-btn"
               type="button"
+              onClick={() => setView('classic')}
+            >
+              <span className="proto-nav-dot" aria-hidden="true" />
+              <span className="proto-nav-btn__label">Classic onboarding</span>
+            </button>
+            <button
+              className="proto-nav-btn"
+              type="button"
               onClick={() => setView('connectors')}
             >
               <span className="proto-nav-dot" aria-hidden="true" />
-              <span className="proto-nav-btn__label">Classic Univ Login</span>
+              <span className="proto-nav-btn__label">Connectors Ring</span>
             </button>
             <button
               className="proto-nav-btn"

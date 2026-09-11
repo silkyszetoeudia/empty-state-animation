@@ -2072,6 +2072,224 @@
   }
 }
 
+.onboard-spin--row {
+  --spin-pad-y: 28px;
+  --spin-tile: 111.881px;
+  --spin-icon: 74.587px;
+  --spin-step-x: 145.69px;
+  --spin-track-w: 100%;
+  --spin-track-h: calc(var(--spin-tile) + var(--spin-pad-y) * 2);
+  min-height: 196px;
+  width: 100%;
+}
+
+.onboard-spin--row .onboard-spin__track {
+  overflow: hidden;
+  width: 100%;
+}
+
+.onboard-spin--row .onboard-spin__tile {
+  border-radius: 16.575px;
+  border-width: 2.072px;
+  padding: 16.575px;
+  top: var(--spin-pad-y);
+  transform: translateX(calc(var(--slot) * var(--spin-step-x))) scale(0.8);
+  transform-origin: center center;
+}
+
+.onboard-spin--row .onboard-spin__tile.is-center {
+  transform: translateX(calc(var(--slot) * var(--spin-step-x))) scale(1);
+}
+
+.onboard-spin--row .onboard-spin__fade {
+  height: 100%;
+  width: 96px;
+}
+
+.onboard-spin--row .onboard-spin__fade--left {
+  background: linear-gradient(90deg, #fff 10%, transparent 100%);
+}
+
+.onboard-spin--row .onboard-spin__fade--right {
+  background: linear-gradient(270deg, #fff 10%, transparent 100%);
+}
+
+.onboard-spin--row .onboard-spin__name {
+  color: var(--base-muted-foreground, #5c7079);
+  left: 50%;
+  padding: 2px 8px;
+  right: auto;
+  top: calc(var(--spin-track-h) + 4px);
+  transform: translateX(-50%);
+  width: auto;
+  white-space: nowrap;
+}
+
+/* --- Classic onboarding (3124:145118) --- */
+
+.classic {
+  align-items: stretch;
+  background: var(--eudia-colors-neutral-warm-slate-integrity-50, #f6f3ef);
+  box-sizing: border-box;
+  display: flex;
+  font-family: var(--font-inter);
+  height: 100vh;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  padding: 48px;
+  width: 100%;
+}
+
+.classic *,
+.classic *::before,
+.classic *::after {
+  box-sizing: border-box;
+}
+
+.classic__frame {
+  background: #fff;
+  border-radius: 16px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  max-width: 1200px;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.classic__main {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.classic__copy {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 144px;
+  padding: 36px;
+  width: 480px;
+}
+
+.classic__logo {
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  height: 32px;
+  padding: 0 12px;
+  width: fit-content;
+}
+
+.classic__logo img {
+  display: block;
+  height: 24px;
+  object-fit: contain;
+  width: 24px;
+}
+
+.classic__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 144px;
+  padding: 0 12px;
+}
+
+.classic__stepper {
+  display: flex;
+  gap: 8px;
+  width: 288px;
+}
+
+.classic__step {
+  background: var(--clarity-depth-100, #d0e0f0);
+  border-radius: 2px;
+  flex: 1 1 0;
+  height: 8px;
+  min-width: 0;
+}
+
+.classic__step.is-on {
+  background: var(--proto-primary, #2b75bd);
+}
+
+.classic__text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.classic__title {
+  color: var(--base-foreground, #122933);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.classic__desc {
+  color: var(--base-muted-foreground, #5c7079);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+}
+
+.classic__art {
+  align-items: center;
+  display: flex;
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  padding: 48px 0;
+  position: relative;
+}
+
+.classic__footer {
+  align-items: center;
+  border-top: 1px solid var(--base-border, #dce2e8);
+  display: flex;
+  justify-content: flex-end;
+  padding: 36px 48px;
+}
+
+.classic__continue {
+  align-items: center;
+  background: var(--proto-primary, #2b75bd);
+  border: none;
+  border-radius: 8px;
+  box-shadow:
+    0 1px 1.5px rgba(0, 0, 0, 0.1),
+    0 1px 1px rgba(0, 0, 0, 0.06);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 500;
+  gap: 6px;
+  height: 36px;
+  justify-content: center;
+  line-height: 20px;
+  padding: 8px 24px;
+  white-space: nowrap;
+}
+
+.classic__continue:hover {
+  filter: brightness(0.96);
+}
+
+.classic__continue img {
+  display: block;
+  height: 16px;
+  width: 16px;
+}
+
 .onboard__copy {
   align-items: center;
   display: flex;
