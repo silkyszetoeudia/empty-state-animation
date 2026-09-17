@@ -303,11 +303,56 @@ function flatten(nodes: FileNode[], open: Set<string>, depth = 0): FlatRow[] {
   });
 }
 
+function FilesCheckbox({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+}): ReactElement {
+  return (
+    <label className="files-check">
+      <input type="checkbox" checked={checked} onChange={onChange} aria-label={label} />
+      <span className="files-check__box" aria-hidden="true">
+        {checked ? <img src={`${ICONS}/check.svg`} alt="" /> : null}
+      </span>
+    </label>
+  );
+}
+
+function FilesChevron({open}: {open: boolean}): ReactElement {
+  return (
+    <span className={clsx('files-chevron', open && 'is-open')} aria-hidden="true">
+      <span className="proto-stroke-icon proto-stroke-icon--lucide" style={{width: 16, height: 16}}>
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </span>
+    </span>
+  );
+}
+
+function ShellIcon({name, size}: {name: string; size: number}): ReactElement {
+  return (
+    <span className="files-shell-icon" style={{width: size, height: size}} aria-hidden="true">
+      <img src={`${ICONS}/shell/${name}.svg`} alt="" width={size} height={size} />
+    </span>
+  );
+}
+
 function FileTypeIcon({kind, open}: {kind: FileKind; open?: boolean}): ReactElement {
   if (kind === 'folder') {
     return (
-      <span className="files-icon" aria-hidden="true">
-        <img src={open ? `${ICONS}/folder-open.svg` : `${ICONS}/folder.svg`} alt="" />
+      <span className="files-icon files-icon--folder" aria-hidden="true">
+        <img
+          className={open ? 'files-folder files-folder--open' : 'files-folder files-folder--closed'}
+          src={open ? `${ICONS}/folder-open.svg` : `${ICONS}/folder.svg`}
+          width={open ? 15.6 : 14.37}
+          height={12.19}
+          alt=""
+        />
       </span>
     );
   }
@@ -334,7 +379,8 @@ function FileTypeIcon({kind, open}: {kind: FileKind; open?: boolean}): ReactElem
 
 export default function FileIconsPage(): ReactElement {
   const [open, setOpen] = useState<Set<string>>(() => new Set(DEFAULT_OPEN));
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(['contracts']));
+  const [shellTab, setShellTab] = useState<'tables' | 'sources' | 'configure'>('sources');
 
   const rows = useMemo(() => flatten(FILE_TREE, open), [open]);
   const fileCount = useMemo(() => countFiles(FILE_TREE), []);
@@ -384,77 +430,130 @@ export default function FileIconsPage(): ReactElement {
 
   return (
     <div className="files-page">
-      <div className="files-card">
-        <header className="files-header">
-          <h1 className="files-title">File table example</h1>
-          <p className="files-count"> • {fileCount.toLocaleString()} files</p>
-        </header>
-        <div className="files-table" role="treegrid" aria-label="File table example">
-          <div className="files-row files-row--head">
-            <label className="files-check">
-              <input
-                type="checkbox"
-                checked={allVisibleSelected}
-                onChange={toggleAllVisible}
-                aria-label="Select all visible rows"
-              />
-            </label>
-            <span className="files-col files-col--name">Document name</span>
-            <span className="files-col">Contract name</span>
-            <span className="files-col">Party 1 name</span>
-            <span className="files-col">Extracted Concept</span>
+      <div className="files-shell">
+        <header className="files-shell__header">
+          <div className="files-shell__title-block">
+            <div className="files-crumb">
+              <ShellIcon name="file-pen" size={20} />
+              <span>Knowledge: Executed Contracts</span>
+              <span className="files-crumb__sep">/</span>
+            </div>
+            <h1 className="files-shell__title">Sales Insights</h1>
           </div>
-          {rows.map(({node, depth}) => {
-            const isFolder = node.kind === 'folder';
-            const isOpen = open.has(node.id);
-            return (
-              <div
-                key={node.id}
-                className={clsx('files-row', selected.has(node.id) && 'is-selected')}
-                role="row"
-                aria-expanded={isFolder ? isOpen : undefined}
-                aria-level={depth + 1}
+          <div className="files-shell__tabs-row">
+            <div className="proto-tabs" role="tablist" aria-label="Workspace">
+              <button
+                className={clsx('proto-tab', shellTab === 'tables' && 'is-active')}
+                type="button"
+                onClick={() => setShellTab('tables')}
               >
-                <label className="files-check" onClick={(event) => event.stopPropagation()}>
-                  <input
-                    type="checkbox"
-                    checked={selected.has(node.id)}
-                    onChange={() => toggleSelected(node.id)}
-                    aria-label={`Select ${node.name}`}
-                  />
-                </label>
-                <button
-                  className="files-name"
-                  type="button"
-                  style={{paddingLeft: 8 + depth * 24}}
-                  onClick={() => (isFolder ? toggleFolder(node.id) : toggleSelected(node.id))}
-                >
-                  <span
-                    className={clsx('files-chevron', isFolder && isOpen && 'is-open', !isFolder && 'is-leaf')}
-                    aria-hidden="true"
-                  >
-                    {isFolder ? (
-                      <svg viewBox="0 0 5.5 9.5" width="8" height="12">
-                        <path
-                          d="M0.75 8.75L4.75 4.75L0.75 0.75"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    ) : null}
-                  </span>
-                  <FileTypeIcon kind={node.kind} open={isOpen} />
-                  <span className="files-name__text">{node.name}</span>
+                <ShellIcon name="table" size={16} />
+                Tables
+              </button>
+              <button
+                className={clsx('proto-tab', shellTab === 'sources' && 'is-active')}
+                type="button"
+                onClick={() => setShellTab('sources')}
+              >
+                <ShellIcon name="files" size={16} />
+                <span>Sources</span>
+                <span className="files-tab-count"> • {fileCount.toLocaleString()}</span>
+              </button>
+              <button
+                className={clsx('proto-tab', shellTab === 'configure' && 'is-active')}
+                type="button"
+                onClick={() => setShellTab('configure')}
+              >
+                <ShellIcon name="settings" size={16} />
+                Configure
+              </button>
+            </div>
+            <div className="files-shell__actions">
+              <button className="files-assistant" type="button">
+                <ShellIcon name="ask-ai" size={16} />
+                Assistant
+              </button>
+              <button className="files-icon-btn" type="button" aria-label="More">
+                <ShellIcon name="ellipsis" size={16} />
+              </button>
+            </div>
+          </div>
+        </header>
+        <div className="files-shell__body">
+          <div className="files-card">
+            <header className="files-header">
+              <h2 className="files-title">Sales Insights</h2>
+              <p className="files-count"> • {fileCount.toLocaleString()} files</p>
+              <div className="files-toolbar">
+                <button className="files-zoom" type="button">
+                  100%
+                  <ShellIcon name="chevron-down" size={16} />
                 </button>
-                <span className="files-col">{node.contract}</span>
-                <span className="files-col">{node.party}</span>
-                <span className="files-col">{node.concept}</span>
+                <button className="files-ghost" type="button">
+                  <ShellIcon name="columns" size={16} />
+                  Columns
+                </button>
+                <button className="files-ghost" type="button">
+                  <ShellIcon name="group" size={16} />
+                  Group by
+                </button>
+                <button className="files-ghost" type="button">
+                  <ShellIcon name="wrap" size={16} />
+                  Wrap text
+                </button>
+                <button className="files-icon-btn" type="button" aria-label="Table more">
+                  <ShellIcon name="ellipsis" size={16} />
+                </button>
               </div>
-            );
-          })}
+            </header>
+            <div className="files-table" role="treegrid" aria-label="Sales Insights files">
+              <div className="files-row files-row--head">
+                <FilesCheckbox
+                  checked={allVisibleSelected}
+                  onChange={toggleAllVisible}
+                  label="Select all visible rows"
+                />
+                <span className="files-col files-col--name">Document name</span>
+                <span className="files-col">Contract name</span>
+                <span className="files-col">Party 1 name</span>
+                <span className="files-col">Extracted Concept</span>
+              </div>
+              {rows.map(({node, depth}) => {
+                const isFolder = node.kind === 'folder';
+                const isOpen = open.has(node.id);
+                return (
+                  <div
+                    key={node.id}
+                    className={clsx('files-row', selected.has(node.id) && 'is-selected')}
+                    role="row"
+                    aria-expanded={isFolder ? isOpen : undefined}
+                    aria-level={depth + 1}
+                  >
+                    <div onClick={(event) => event.stopPropagation()}>
+                      <FilesCheckbox
+                        checked={selected.has(node.id)}
+                        onChange={() => toggleSelected(node.id)}
+                        label={`Select ${node.name}`}
+                      />
+                    </div>
+                    <button
+                      className="files-name"
+                      type="button"
+                      style={{paddingLeft: 8 + depth * 24}}
+                      onClick={() => (isFolder ? toggleFolder(node.id) : toggleSelected(node.id))}
+                    >
+                      {isFolder ? <FilesChevron open={isOpen} /> : <span className="files-chevron is-leaf" />}
+                      <FileTypeIcon kind={node.kind} open={isOpen} />
+                      <span className="files-name__text">{node.name}</span>
+                    </button>
+                    <span className="files-col">{node.contract}</span>
+                    <span className="files-col">{node.party}</span>
+                    <span className="files-col">{node.concept}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
