@@ -8,6 +8,7 @@ import {
   type CSSProperties,
   type ReactElement,
 } from 'react';
+import FileIconsPage from './FileIconsPage';
 
 function clsx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ');
@@ -31,6 +32,7 @@ type ShellView =
   | 'classic'
   | 'connectors'
   | 'twin'
+  | 'file-icons'
   | 'projects'
   | 'chats'
   | 'configure'
@@ -41,6 +43,44 @@ type ShellView =
   | 'notifications'
   | 'help'
   | 'feedback';
+
+const VIEW_PATHS: Record<ShellView, string> = {
+  note: '/',
+  assistant: '/assistant',
+  knowledge: '/knowledge',
+  intelligence: '/intelligence-hub',
+  opportunities: '/opportunities',
+  horizon: '/horizon-scanning',
+  acquisition: '/acquisition',
+  'acq-fill': '/acquisition-filling',
+  onboarding: '/onboarding-spinner',
+  classic: '/classic-onboarding',
+  connectors: '/connectors-ring',
+  twin: '/digital-twin',
+  'file-icons': '/file-icons',
+  projects: '/projects',
+  chats: '/chat-history',
+  configure: '/configure',
+  'prompt-libraries': '/prompt-libraries',
+  personalization: '/personalization',
+  'user-access': '/user-access',
+  'settings-connectors': '/connectors',
+  notifications: '/notifications',
+  help: '/help',
+  feedback: '/feedback',
+};
+
+function viewFromLocation(pathname: string): ShellView {
+  const path = pathname.replace(/\/+$/, '') || '/';
+  if (path === '/note') {
+    return 'note';
+  }
+  const match = (Object.entries(VIEW_PATHS) as Array<[ShellView, string]>).find(
+    ([, route]) => route === path,
+  );
+  return match?.[0] ?? 'note';
+}
+
 type KnowledgeKind = 'contracts' | 'facts' | 'resources' | 'twin';
 type KnowledgeTab = 'active' | 'archived';
 type AppIconKind = ProjectKind | 'project2';
@@ -987,6 +1027,7 @@ const PLACEHOLDERS: Record<
     | 'classic'
     | 'connectors'
     | 'twin'
+    | 'file-icons'
   >,
   {title: string; body: string; href?: string}
 > = {
@@ -2475,7 +2516,7 @@ function OnboardingConnectorsPage({onHome}: {onHome: () => void}): ReactElement 
 
 export default function AllProjectsApp(): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
-  const [view, setView] = useState<ShellView>('note');
+  const [view, setViewState] = useState<ShellView>(() => viewFromLocation(window.location.pathname));
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('general');
   const [knowledgeType, setKnowledgeType] = useState<KnowledgeKind>('contracts');
   const [knowledgeTab, setKnowledgeTab] = useState<KnowledgeTab>('active');
@@ -2489,6 +2530,20 @@ export default function AllProjectsApp(): ReactElement {
   const [draftType, setDraftType] = useState<ProjectKind>('general');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [configureOpen, setConfigureOpen] = useState(true);
+
+  const setView = useCallback((next: ShellView) => {
+    setViewState(next);
+    const path = VIEW_PATHS[next];
+    if (window.location.pathname !== path) {
+      window.history.pushState(null, '', path);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onPop = () => setViewState(viewFromLocation(window.location.pathname));
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -2801,6 +2856,14 @@ export default function AllProjectsApp(): ReactElement {
             >
               <span className="proto-nav-dot" aria-hidden="true" />
               <span className="proto-nav-btn__label">Digital Twin Creation</span>
+            </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'file-icons' && 'is-active')}
+              type="button"
+              onClick={() => setView('file-icons')}
+            >
+              <span className="proto-nav-dot" aria-hidden="true" />
+              <span className="proto-nav-btn__label">File Icons</span>
             </button>
           </div>
         </div>
@@ -3195,6 +3258,8 @@ export default function AllProjectsApp(): ReactElement {
           <AcquisitionPage />
         ) : view === 'acq-fill' ? (
           <AcquisitionFillPage />
+        ) : view === 'file-icons' ? (
+          <FileIconsPage />
         ) : (
           <div className="proto-card">
             <div className="proto-placeholder">

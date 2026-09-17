@@ -4340,3 +4340,256 @@
     animation: none;
   }
 }
+
+/* --- File Icons table (3205:151658) --- */
+
+.files-page {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.files-card {
+  background: var(--base-background);
+  border: 1px solid var(--base-border);
+  border-radius: 8px;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.files-header {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 0;
+  height: 56px;
+  padding: 12px 14px 12px 16px;
+  width: 100%;
+}
+
+.files-title {
+  color: var(--base-foreground);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0 8px 0 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files-count {
+  color: var(--base-muted-foreground);
+  flex: 1 1 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files-table {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  width: 100%;
+}
+
+.files-row {
+  align-items: center;
+  display: grid;
+  flex-shrink: 0;
+  grid-template-columns: 48px minmax(240px, 1.45fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(180px, 1.15fr);
+  height: 40px;
+  min-width: 920px;
+  width: 100%;
+}
+
+.files-row--head {
+  background: var(--eudia-colors-neutral-cloud-veil-50, #f9fafb);
+  color: var(--base-muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.files-row:not(.files-row--head):hover {
+  background: var(--base-hover);
+}
+
+.files-row.is-selected {
+  background: var(--base-sec-sidebar-active, var(--base-active));
+}
+
+.files-check {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  padding: 0 8px 0 24px;
+}
+
+.files-check input {
+  accent-color: var(--base-primary);
+  cursor: pointer;
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.files-name {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--base-foreground);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 14px;
+  gap: 10px;
+  height: 40px;
+  line-height: 20px;
+  min-width: 0;
+  overflow: hidden;
+  padding-right: 8px;
+  text-align: left;
+}
+
+.files-name__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files-col {
+  color: var(--base-foreground);
+  font-size: 14px;
+  line-height: 20px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files-row--head .files-col {
+  color: var(--base-muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.files-col--name {
+  padding-left: 34px;
+}
+
+.files-chevron {
+  align-items: center;
+  color: var(--base-muted-foreground);
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 16px;
+  justify-content: center;
+  transform: rotate(0deg);
+  transition: transform 140ms ease-out;
+  width: 16px;
+}
+
+.files-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.files-chevron.is-leaf {
+  visibility: hidden;
+}
+
+.files-icon,
+.files-glyph,
+.files-thumb {
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
+}
+
+.files-icon {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.files-icon img {
+  display: block;
+  height: 16px;
+  object-fit: contain;
+  width: 16px;
+}
+
+.files-glyph {
+  align-items: center;
+  background: #eae8e6;
+  border: 1px solid #948c81;
+  border-radius: 2px;
+  box-sizing: border-box;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.files-glyph img {
+  display: block;
+  height: 10px;
+  object-fit: contain;
+  width: 10px;
+}
+
+.files-thumb {
+  border: 1px solid #948c81;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.files-thumb img {
+  display: block;
+  height: 16px;
+  object-fit: cover;
+  width: 16px;
+}
+
+@media (max-width: 960px) {
+  .files-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .files-row .files-col:not(.files-col--name) {
+    display: none;
+  }
+
+  .files-check {
+    padding-left: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .files-chevron {
+    transition: none;
+  }
+}
