@@ -33,7 +33,14 @@ type ShellView =
   | 'twin'
   | 'projects'
   | 'chats'
-  | 'configure';
+  | 'configure'
+  | 'prompt-libraries'
+  | 'personalization'
+  | 'user-access'
+  | 'settings-connectors'
+  | 'notifications'
+  | 'help'
+  | 'feedback';
 type KnowledgeKind = 'contracts' | 'facts' | 'resources' | 'twin';
 type KnowledgeTab = 'active' | 'archived';
 type AppIconKind = ProjectKind | 'project2';
@@ -56,6 +63,9 @@ type KnowledgeTable = {
 };
 
 const SEED_PROJECTS: Project[] = [
+  {id: 'p7', name: 'P7', type: 'general', owner: 'me', favorite: true, updatedAt: 'Updated just now'},
+  {id: 'jl', name: 'JL - Test', type: 'compliance', owner: 'me', favorite: false, updatedAt: 'Updated 1d ago'},
+  {id: 'rb', name: 'RB test', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 2d ago'},
   {id: 'm1', name: 'Project 2', type: 'ma', owner: 'me', favorite: true, updatedAt: 'Updated yesterday'},
   {id: 'm2', name: 'Northstar diligence', type: 'ma', owner: 'me', favorite: false, updatedAt: 'Updated 3d ago'},
   {id: 'm3', name: 'Horizon merger', type: 'ma', owner: 'shared', favorite: false, updatedAt: 'Updated 6d ago'},
@@ -283,25 +293,304 @@ function onboardSlot(index: number, center: number, count: number) {
   return delta;
 }
 
+type LucideName =
+  | 'folder'
+  | 'folder-open'
+  | 'loader-pinwheel'
+  | 'calendar-clock'
+  | 'clock'
+  | 'library'
+  | 'user'
+  | 'users'
+  | 'unplug'
+  | 'bell'
+  | 'circle-help'
+  | 'square-plus'
+  | 'settings-2'
+  | 'chevron-down'
+  | 'chevrons-up-down';
+
+type LucideShape =
+  | {tag: 'path'; d: string; group?: string}
+  | {tag: 'circle'; cx: number; cy: number; r: number; group?: string}
+  | {tag: 'rect'; width: number; height: number; x: number; y: number; rx?: number; group?: string};
+
+const LUCIDE_SHAPES: Record<Exclude<LucideName, 'loader-pinwheel'>, LucideShape[]> = {
+  folder: [
+    {tag: 'path', d: 'M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'},
+  ],
+  'folder-open': [
+    {tag: 'path', d: 'm6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2'},
+  ],
+  'calendar-clock': [
+    {tag: 'path', d: 'M16 2v4', group: 'proto-hs-calendar'},
+    {tag: 'path', d: 'M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5', group: 'proto-hs-calendar'},
+    {tag: 'path', d: 'M3 10h5', group: 'proto-hs-calendar'},
+    {tag: 'path', d: 'M8 2v4', group: 'proto-hs-calendar'},
+    {tag: 'circle', cx: 16, cy: 16, r: 6, group: 'proto-hs-clock'},
+    {tag: 'path', d: 'M16 14v2.2l1.6 1', group: 'proto-hs-clock'},
+  ],
+  clock: [
+    {tag: 'circle', cx: 12, cy: 12, r: 10, group: 'proto-clock-face'},
+    {tag: 'path', d: 'M12 12V6', group: 'proto-clock-minute'},
+    {tag: 'path', d: 'M12 12L16 14', group: 'proto-clock-hour'},
+  ],
+  library: [
+    {tag: 'path', d: 'M12 6v14', group: 'proto-lib-book'},
+    {tag: 'path', d: 'M8 8v12', group: 'proto-lib-book'},
+    {tag: 'path', d: 'M4 4v16', group: 'proto-lib-book'},
+    {tag: 'path', d: 'm16 6 4 14', group: 'proto-lib-fall'},
+  ],
+  user: [
+    {tag: 'path', d: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2', group: 'proto-user-body'},
+    {tag: 'circle', cx: 12, cy: 7, r: 4, group: 'proto-user-head'},
+  ],
+  users: [
+    {tag: 'path', d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', group: 'proto-users-front'},
+    {tag: 'circle', cx: 9, cy: 7, r: 4, group: 'proto-users-front'},
+    {tag: 'path', d: 'M16 3.128a4 4 0 0 1 0 7.744', group: 'proto-users-back'},
+    {tag: 'path', d: 'M22 21v-2a4 4 0 0 0-3-3.87', group: 'proto-users-back'},
+  ],
+  unplug: [
+    {tag: 'path', d: 'm2 22 3-3', group: 'proto-plug-a'},
+    {tag: 'path', d: 'M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z', group: 'proto-plug-a'},
+    {tag: 'path', d: 'M7.5 13.5 10 11', group: 'proto-plug-a'},
+    {tag: 'path', d: 'M10.5 16.5 13 14', group: 'proto-plug-a'},
+    {tag: 'path', d: 'm19 5 3-3', group: 'proto-plug-b'},
+    {tag: 'path', d: 'm12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0Z', group: 'proto-plug-b'},
+  ],
+  bell: [
+    {tag: 'path', d: 'M10.268 21a2 2 0 0 0 3.464 0'},
+    {tag: 'path', d: 'M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326'},
+  ],
+  'circle-help': [
+    {tag: 'circle', cx: 12, cy: 12, r: 10, group: 'proto-help-ring'},
+    {tag: 'path', d: 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3', group: 'proto-help-mark'},
+    {tag: 'path', d: 'M12 17h.01', group: 'proto-help-mark'},
+  ],
+  'square-plus': [
+    {tag: 'rect', width: 18, height: 18, x: 3, y: 3, rx: 2, group: 'proto-plus-box'},
+    {tag: 'path', d: 'M8 12h8', group: 'proto-plus-mark'},
+    {tag: 'path', d: 'M12 8v8', group: 'proto-plus-mark'},
+  ],
+  'settings-2': [
+    {tag: 'path', d: 'M14 17H5', group: 'proto-set-track'},
+    {tag: 'path', d: 'M19 7h-9', group: 'proto-set-track'},
+    {tag: 'circle', cx: 7, cy: 7, r: 3, group: 'proto-set-knob-a'},
+    {tag: 'circle', cx: 17, cy: 17, r: 3, group: 'proto-set-knob-b'},
+  ],
+  'chevron-down': [{tag: 'path', d: 'm6 9 6 6 6-6'}],
+  'chevrons-up-down': [
+    {tag: 'path', d: 'm7 15 5 5 5-5'},
+    {tag: 'path', d: 'm7 9 5-5 5 5'},
+  ],
+};
+
+const LUCIDE_MOTION_CLASS: Partial<Record<LucideName, string>> = {
+  'calendar-clock': 'proto-hs-icon',
+  clock: 'proto-clock-icon',
+  'settings-2': 'proto-settings-icon',
+  library: 'proto-library-icon',
+  user: 'proto-user-icon',
+  users: 'proto-users-icon',
+  unplug: 'proto-unplug-icon',
+  bell: 'proto-stroke-icon--tilt',
+  'circle-help': 'proto-help-icon',
+  'square-plus': 'proto-feedback-icon',
+};
+
+const LUCIDE_DRAW_GROUPS = new Set(['proto-user-head']);
+
+function lucideGroups(shapes: LucideShape[]): string[] {
+  const groups: string[] = [];
+  for (const shape of shapes) {
+    if (shape.group && !groups.includes(shape.group)) {
+      groups.push(shape.group);
+    }
+  }
+  return groups;
+}
+
+function lucideShapeNode(shape: LucideShape, key: number, draw: boolean): ReactElement {
+  const className = draw ? 'proto-stroke-icon__path' : undefined;
+  const pathLength = draw ? 1 : undefined;
+  if (shape.tag === 'path') {
+    return <path key={key} className={className} d={shape.d} pathLength={pathLength} />;
+  }
+  if (shape.tag === 'circle') {
+    return (
+      <circle
+        key={key}
+        className={className}
+        cx={shape.cx}
+        cy={shape.cy}
+        r={shape.r}
+        pathLength={pathLength}
+      />
+    );
+  }
+  return (
+    <rect
+      key={key}
+      className={className}
+      width={shape.width}
+      height={shape.height}
+      x={shape.x}
+      y={shape.y}
+      rx={shape.rx}
+      pathLength={pathLength}
+    />
+  );
+}
+
 function LucideIcon({
   name,
   size,
+  draw = true,
 }: {
-  name: 'folder' | 'folder-open' | 'loader-pinwheel' | 'calendar-clock';
+  name: LucideName;
   size: number;
-}) {
-  const src = name === 'loader-pinwheel' ? assets.loaderPinwheel : `${ICONS}/lucide-${name}.svg`;
+  draw?: boolean;
+}): ReactElement {
+  if (name === 'loader-pinwheel') {
+    return (
+      <span
+        className="proto-lucide"
+        style={{
+          width: size,
+          height: size,
+          WebkitMaskImage: `url(${assets.loaderPinwheel})`,
+          maskImage: `url(${assets.loaderPinwheel})`,
+        }}
+        aria-hidden="true"
+      />
+    );
+  }
+
+  const shapes = LUCIDE_SHAPES[name];
+  const groups = lucideGroups(shapes);
+  const motionClass = LUCIDE_MOTION_CLASS[name];
+
   return (
     <span
-      className="proto-lucide"
-      style={{
-        width: size,
-        height: size,
-        WebkitMaskImage: `url(${src})`,
-        maskImage: `url(${src})`,
-      }}
+      className={clsx('proto-stroke-icon proto-stroke-icon--lucide', motionClass)}
+      style={{width: size, height: size}}
       aria-hidden="true"
-    />
+    >
+      <svg viewBox="0 0 24 24" fill="none">
+        {groups.length > 0
+          ? groups.map((group) => (
+              <g key={group} className={group}>
+                {shapes
+                  .filter((shape) => shape.group === group)
+                  .map((shape, index) => lucideShapeNode(shape, index, LUCIDE_DRAW_GROUPS.has(group)))}
+              </g>
+            ))
+          : shapes.map((shape, index) => lucideShapeNode(shape, index, name === 'bell' ? false : draw))}
+      </svg>
+    </span>
+  );
+}
+
+type FigmaNavPart = {
+  d: string;
+  className?: string;
+  draw?: boolean;
+  group?: string;
+};
+
+const FIGMA_NAV_ICONS: Record<
+  'graduation-cap' | 'area-chart' | 'telescope' | 'layout-list',
+  {viewBox: string; strokeWidth: number; d?: string; parts?: FigmaNavPart[]}
+> = {
+  'graduation-cap': {
+    viewBox: '0 0 14.8435 10.8335',
+    strokeWidth: 1.237,
+    d: 'M14.0827 4.0835V8.0835M3.41602 5.75016V8.0835C3.41602 8.61393 3.83744 9.12264 4.58759 9.49771C5.33773 9.87278 6.35515 10.0835 7.41602 10.0835C8.47688 10.0835 9.4943 9.87278 10.2444 9.49771C10.9946 9.12264 11.416 8.61393 11.416 8.0835V5.75016M13.6959 4.69824C13.8152 4.64559 13.9165 4.55908 13.9872 4.44944C14.0578 4.3398 14.0948 4.21183 14.0934 4.0814C14.0921 3.95096 14.0525 3.82379 13.9796 3.71563C13.9067 3.60747 13.8036 3.52308 13.6832 3.4729L7.96921 0.870238C7.79551 0.791004 7.60681 0.75 7.41588 0.75C7.22496 0.75 7.03626 0.791004 6.86255 0.870238L1.14921 3.47024C1.03053 3.52222 0.929559 3.60766 0.858659 3.71612C0.787759 3.82457 0.75 3.95133 0.75 4.08091C0.75 4.21048 0.787759 4.33724 0.858659 4.44569C0.929559 4.55415 1.03053 4.63959 1.14921 4.69157L6.86255 7.2969C7.03626 7.37614 7.22496 7.41714 7.41588 7.41714C7.60681 7.41714 7.79551 7.37614 7.96921 7.2969L13.6959 4.69824Z',
+  },
+  'area-chart': {
+    viewBox: '0 0 13.5 13.5',
+    strokeWidth: 1.125,
+    parts: [
+      {d: 'M0.75 0.75V12.75H12.75'},
+      {d: 'M3.41667 6.75V10.0833H11.4167V4.08333'},
+      {
+        d: 'M3.41667 6.75L5.41667 4.75L8.08333 7.41667L11.4167 4.08333',
+        className: 'proto-ih-line proto-stroke-icon__path',
+        draw: true,
+      },
+    ],
+  },
+  telescope: {
+    viewBox: '0 0 14.5516 13.3579',
+    strokeWidth: 1.213,
+    parts: [
+      {
+        d: 'M9.9437 12.6078L7.8737 8.46778M3.38249 4.36312L4.12516 7.33379M4.61035 12.6078L6.68035 8.46778M8.61035 7.27442C8.61035 8.0108 8.0134 8.60775 7.27702 8.60775C6.54064 8.60775 5.94369 8.0108 5.94369 7.27442C5.94369 6.53804 6.54064 5.94108 7.27702 5.94108C8.0134 5.94108 8.61035 6.53804 8.61035 7.27442Z',
+      },
+      {
+        d: 'M5.98696 6.93635L1.86696 7.81502C1.70704 7.84973 1.53988 7.82008 1.40165 7.7325C1.26341 7.64492 1.16521 7.50644 1.12829 7.34702L0.77029 5.91369C0.7282 5.74099 0.752101 5.55881 0.837312 5.40281C0.922523 5.24682 1.0629 5.12826 1.23096 5.07035L10.2336 2.11035M8.31706 6.43908L11.2051 5.82308M10.267 2.56783C10.1813 2.22482 10.2353 1.86181 10.4172 1.55864C10.5991 1.25547 10.894 1.03696 11.237 0.95116L11.9636 0.769827C12.1351 0.727067 12.3164 0.754092 12.4679 0.844967C12.6194 0.935842 12.7287 1.08314 12.7716 1.25449L13.7816 5.29449C13.8246 5.466 13.7977 5.64755 13.7068 5.7992C13.6159 5.95085 13.4685 6.06019 13.297 6.10316L12.5703 6.28449C12.2273 6.37019 11.8643 6.31615 11.5611 6.13425C11.258 5.95234 11.0394 5.65748 10.9536 5.31449L10.267 2.56783Z',
+        group: 'proto-opp-barrel',
+      },
+    ],
+  },
+  'layout-list': {
+    viewBox: '0 0 13.5 13.5',
+    strokeWidth: 1.125,
+    parts: [
+      {d: 'M8.08333 1.41667H12.75', className: 'proto-stroke-icon__path proto-list-line', draw: true},
+      {d: 'M8.08333 4.75H12.75', className: 'proto-stroke-icon__path proto-list-line', draw: true},
+      {d: 'M8.08333 8.75H12.75', className: 'proto-stroke-icon__path proto-list-line', draw: true},
+      {d: 'M8.08333 12.0833H12.75', className: 'proto-stroke-icon__path proto-list-line', draw: true},
+      {
+        d: 'M1.41667 0.75H4.75C5.11819 0.75 5.41667 1.04848 5.41667 1.41667V4.75C5.41667 5.11819 5.11819 5.41667 4.75 5.41667H1.41667C1.04848 5.41667 0.75 5.11819 0.75 4.75V1.41667C0.75 1.04848 1.04848 0.75 1.41667 0.75Z',
+      },
+      {
+        d: 'M1.41667 8.08333H4.75C5.11819 8.08333 5.41667 8.38181 5.41667 8.75V12.0833C5.41667 12.4515 5.11819 12.75 4.75 12.75H1.41667C1.04848 12.75 0.75 12.4515 0.75 12.0833V8.75C0.75 8.38181 1.04848 8.08333 1.41667 8.08333Z',
+      },
+    ],
+  },
+};
+
+function FigmaNavIcon({name}: {name: keyof typeof FIGMA_NAV_ICONS}): ReactElement {
+  const icon = FIGMA_NAV_ICONS[name];
+  const parts = icon.parts ?? [{d: icon.d ?? '', className: 'proto-stroke-icon__path', draw: true}];
+  return (
+    <span
+      className={clsx(
+        'proto-stroke-icon',
+        name === 'graduation-cap' && 'proto-cap-icon',
+        name === 'telescope' && 'proto-opp-icon',
+      )}
+      style={{width: 16, height: 16}}
+      aria-hidden="true"
+    >
+      <svg viewBox={icon.viewBox} fill="none">
+        {parts.map((part, index) => {
+          const path = (
+            <path
+              className={part.className}
+              d={part.d}
+              pathLength={part.draw ? 1 : undefined}
+              strokeWidth={icon.strokeWidth}
+            />
+          );
+          return part.group ? (
+            <g key={index} className={part.group}>
+              {path}
+            </g>
+          ) : (
+            <path
+              key={index}
+              className={part.className}
+              d={part.d}
+              pathLength={part.draw ? 1 : undefined}
+              strokeWidth={icon.strokeWidth}
+            />
+          );
+        })}
+      </svg>
+    </span>
   );
 }
 
@@ -715,12 +1004,40 @@ const PLACEHOLDERS: Record<
     body: 'Cross-matter signals and reporting would appear here.',
   },
   chats: {
-    title: 'All chats',
-    body: 'Recent conversations would list here. Sidebar entries are still placeholders from the Figma file.',
+    title: 'Chat history',
+    body: 'Recent conversations would list here.',
   },
   configure: {
     title: 'Configure',
     body: 'Workspace and account settings would open from this item.',
+  },
+  'prompt-libraries': {
+    title: 'Prompt libraries',
+    body: 'Saved prompt libraries would appear here.',
+  },
+  personalization: {
+    title: 'Personalization',
+    body: 'Assistant personalization settings would appear here.',
+  },
+  'user-access': {
+    title: 'User access',
+    body: 'Workspace members and permissions would appear here.',
+  },
+  'settings-connectors': {
+    title: 'Connectors',
+    body: 'Connected sources and apps would appear here.',
+  },
+  notifications: {
+    title: 'Notifications',
+    body: 'Notification preferences would appear here.',
+  },
+  help: {
+    title: 'Get help',
+    body: 'Help and support resources would appear here.',
+  },
+  feedback: {
+    title: 'Feedback',
+    body: 'A feedback form would open from this item.',
   },
 };
 
@@ -2171,6 +2488,7 @@ export default function AllProjectsApp(): ReactElement {
   const [draftName, setDraftName] = useState('');
   const [draftType, setDraftType] = useState<ProjectKind>('general');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [configureOpen, setConfigureOpen] = useState(true);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -2333,24 +2651,8 @@ export default function AllProjectsApp(): ReactElement {
               type="button"
               onClick={() => setView('knowledge')}
             >
-              <Icon src={assets.graduationCap} size={16} />
+              <FigmaNavIcon name="graduation-cap" />
               <span className="proto-nav-btn__label">Knowledge</span>
-            </button>
-            <button
-              className={clsx('proto-nav-btn', view === 'intelligence' && 'is-active')}
-              type="button"
-              onClick={() => setView('intelligence')}
-            >
-              <Icon src={assets.areaChart} size={16} />
-              <span className="proto-nav-btn__label">Intelligence Hub</span>
-            </button>
-            <button
-              className={clsx('proto-nav-btn', view === 'opportunities' && 'is-active')}
-              type="button"
-              onClick={() => setView('opportunities')}
-            >
-              <Icon src={assets.telescope} size={16} />
-              <span className="proto-nav-btn__label">Opportunities</span>
             </button>
             <button
               className={clsx('proto-nav-btn', view === 'horizon' && 'is-active')}
@@ -2360,6 +2662,98 @@ export default function AllProjectsApp(): ReactElement {
               <LucideIcon name="calendar-clock" size={16} />
               <span className="proto-nav-btn__label">Horizon Scanning</span>
             </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'intelligence' && 'is-active')}
+              type="button"
+              onClick={() => setView('intelligence')}
+            >
+              <FigmaNavIcon name="area-chart" />
+              <span className="proto-nav-btn__label">Intelligence Hub</span>
+            </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'opportunities' && 'is-active')}
+              type="button"
+              onClick={() => setView('opportunities')}
+            >
+              <FigmaNavIcon name="telescope" />
+              <span className="proto-nav-btn__label">Opportunities</span>
+            </button>
+          </div>
+
+          <div className="proto-nav-group">
+            <button
+              className={clsx('proto-nav-btn', view === 'projects' && 'is-active')}
+              type="button"
+              onClick={() => {
+                setSelectedId(null);
+                setView('projects');
+              }}
+            >
+              <FigmaNavIcon name="layout-list" />
+              <span className="proto-nav-btn__label">All projects</span>
+            </button>
+          </div>
+
+          <div className="proto-nav-group">
+            <button
+              className={clsx('proto-nav-btn', view === 'chats' && 'is-active')}
+              type="button"
+              onClick={() => setView('chats')}
+            >
+              <LucideIcon name="clock" size={16} />
+              <span className="proto-nav-btn__label">Chat history</span>
+            </button>
+            <button
+              className="proto-nav-btn"
+              type="button"
+              aria-expanded={configureOpen}
+              onClick={() => setConfigureOpen((value) => !value)}
+            >
+              <LucideIcon name="settings-2" size={16} />
+              <span className="proto-nav-btn__label">Configure</span>
+              <span className={clsx('proto-nav-btn__chevron', configureOpen && 'is-open')}>
+                <LucideIcon name="chevron-down" size={16} draw={false} />
+              </span>
+            </button>
+            {configureOpen ? (
+              <>
+                <button
+                  className={clsx('proto-nav-btn proto-nav-btn--sub', view === 'prompt-libraries' && 'is-active')}
+                  type="button"
+                  onClick={() => setView('prompt-libraries')}
+                >
+                  <LucideIcon name="library" size={16} />
+                  <span className="proto-nav-btn__label">Prompt libraries</span>
+                </button>
+                <button
+                  className={clsx('proto-nav-btn proto-nav-btn--sub', view === 'personalization' && 'is-active')}
+                  type="button"
+                  onClick={() => setView('personalization')}
+                >
+                  <LucideIcon name="user" size={16} />
+                  <span className="proto-nav-btn__label">Personalization</span>
+                </button>
+                <button
+                  className={clsx('proto-nav-btn proto-nav-btn--sub', view === 'user-access' && 'is-active')}
+                  type="button"
+                  onClick={() => setView('user-access')}
+                >
+                  <LucideIcon name="users" size={16} />
+                  <span className="proto-nav-btn__label">User access</span>
+                </button>
+                <button
+                  className={clsx('proto-nav-btn proto-nav-btn--sub', view === 'settings-connectors' && 'is-active')}
+                  type="button"
+                  onClick={() => setView('settings-connectors')}
+                >
+                  <LucideIcon name="unplug" size={16} />
+                  <span className="proto-nav-btn__label">Connectors</span>
+                </button>
+              </>
+            ) : null}
+          </div>
+
+          <div className="proto-nav-group">
             <button
               className={clsx('proto-nav-btn', view === 'note' && 'is-active')}
               type="button"
@@ -2409,6 +2803,41 @@ export default function AllProjectsApp(): ReactElement {
               <span className="proto-nav-btn__label">Digital Twin Creation</span>
             </button>
           </div>
+        </div>
+        <div className="proto-sidebar__footer">
+          <div className="proto-nav-group proto-nav-group--footer">
+            <button
+              className={clsx('proto-nav-btn', view === 'notifications' && 'is-active')}
+              type="button"
+              onClick={() => setView('notifications')}
+            >
+              <LucideIcon name="bell" size={16} />
+              <span className="proto-nav-btn__label">Notifications</span>
+            </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'help' && 'is-active')}
+              type="button"
+              onClick={() => setView('help')}
+            >
+              <LucideIcon name="circle-help" size={16} />
+              <span className="proto-nav-btn__label">Get help</span>
+            </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'feedback' && 'is-active')}
+              type="button"
+              onClick={() => setView('feedback')}
+            >
+              <LucideIcon name="square-plus" size={16} />
+              <span className="proto-nav-btn__label">Feedback</span>
+            </button>
+          </div>
+          <button className="proto-user" type="button">
+            <span className="proto-avatar">SS</span>
+            <span className="proto-user__meta">
+              <span className="proto-user__name">Silky Szeto</span>
+            </span>
+            <LucideIcon name="chevrons-up-down" size={16} draw={false} />
+          </button>
         </div>
       </aside>
 
