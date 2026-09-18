@@ -70,6 +70,8 @@ const VIEW_PATHS: Record<ShellView, string> = {
   feedback: '/feedback',
 };
 
+const HIDDEN_VIEWS = new Set<ShellView>(['file-icons']);
+
 function viewFromLocation(pathname: string): ShellView {
   const path = pathname.replace(/\/+$/, '') || '/';
   if (path === '/note') {
@@ -78,7 +80,10 @@ function viewFromLocation(pathname: string): ShellView {
   const match = (Object.entries(VIEW_PATHS) as Array<[ShellView, string]>).find(
     ([, route]) => route === path,
   );
-  return match?.[0] ?? 'note';
+  if (!match || HIDDEN_VIEWS.has(match[0])) {
+    return 'note';
+  }
+  return match[0];
 }
 
 type KnowledgeKind = 'contracts' | 'facts' | 'resources' | 'twin';
@@ -2856,14 +2861,6 @@ export default function AllProjectsApp(): ReactElement {
             >
               <span className="proto-nav-dot" aria-hidden="true" />
               <span className="proto-nav-btn__label">Digital Twin Creation</span>
-            </button>
-            <button
-              className={clsx('proto-nav-btn', view === 'file-icons' && 'is-active')}
-              type="button"
-              onClick={() => setView('file-icons')}
-            >
-              <span className="proto-nav-dot" aria-hidden="true" />
-              <span className="proto-nav-btn__label">File Icons</span>
             </button>
           </div>
         </div>
