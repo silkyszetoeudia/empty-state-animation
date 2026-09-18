@@ -233,6 +233,44 @@
   width: 16px;
 }
 
+.proto-compliance {
+  color: currentColor;
+  display: block;
+  flex-shrink: 0;
+  height: 16px;
+  overflow: visible;
+  width: 16px;
+}
+
+.proto-compliance svg {
+  display: block;
+  height: 16px;
+  overflow: visible;
+  width: 16px;
+}
+
+.proto-compliance path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.proto-compliance__check {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.proto-compliance__ring {
+  stroke-linejoin: round;
+  transform-box: view-box;
+  transform-origin: center;
+  transition: transform 440ms ease-out;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-compliance__ring {
+  transform: rotate(90deg);
+}
+
 .proto-ask-ai svg {
   display: block;
   height: 100%;
@@ -292,6 +330,11 @@
 @media (prefers-reduced-motion: reduce) {
   .proto-nav-btn:hover:not(.is-active) .proto-ask-ai__ring,
   .proto-nav-btn:hover:not(.is-active) .proto-ask-ai__star,
+  .proto-nav-btn:hover:not(.is-active) .proto-compliance__ring {
+    animation: none;
+    transform: none;
+    transition: none;
+  }
   .proto-nav-btn:hover:not(.is-active) .proto-stroke-icon__path,
   .proto-nav-btn:hover:not(.is-active) .proto-hs-calendar,
   .proto-nav-btn:hover:not(.is-active) .proto-clock-hour,

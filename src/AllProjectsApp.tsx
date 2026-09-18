@@ -22,6 +22,7 @@ type Ownership = 'all' | 'owned' | 'shared';
 type ShellView =
   | 'note'
   | 'assistant'
+  | 'compliance'
   | 'knowledge'
   | 'intelligence'
   | 'opportunities'
@@ -47,6 +48,7 @@ type ShellView =
 const VIEW_PATHS: Record<ShellView, string> = {
   note: '/',
   assistant: '/assistant',
+  compliance: '/compliance',
   knowledge: '/knowledge',
   intelligence: '/intelligence-hub',
   opportunities: '/opportunities',
@@ -132,6 +134,23 @@ function Icon({src, size}: {src: string; size: number}) {
   return (
     <span className="proto-icon" style={{width: size, height: size}}>
       <img src={src} alt="" />
+    </span>
+  );
+}
+
+function ComplianceIcon(): ReactElement {
+  return (
+    <span className="proto-compliance" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+        <path
+          className="proto-compliance__ring"
+          d="M21.1559 12.709C20.9656 12.2522 20.9656 11.7478 21.1559 11.2909L21.8793 9.60629C22.1077 9.07331 21.9078 8.44514 21.4034 8.14058L19.8235 7.19834C19.3952 6.95088 19.1001 6.5321 18.9859 6.04671L18.5767 4.2574C18.4434 3.68634 17.92 3.29612 17.3299 3.35322L15.5025 3.52454C15.0076 3.57213 14.5222 3.41033 14.151 3.08673L12.7709 1.87799C12.3331 1.48777 11.6764 1.48777 11.2291 1.87799L9.84902 3.08673C9.47784 3.41033 8.99244 3.57213 8.49752 3.52454L6.67014 3.35322C6.08957 3.29612 5.55658 3.68634 5.42333 4.2574L5.01408 6.04671C4.90938 6.5321 4.60482 6.94136 4.17653 7.19834L2.5966 8.14058C2.09217 8.43563 1.8923 9.06379 2.12072 9.60629L2.84406 11.2909C3.03441 11.7478 3.03441 12.2522 2.84406 12.709L2.12072 14.3937C1.8923 14.9266 2.09217 15.5548 2.5966 15.8594L4.17653 16.8016C4.60482 17.0491 4.89987 17.4678 5.01408 17.9532L5.42333 19.7425C5.55658 20.3136 6.08005 20.7038 6.67014 20.6467L8.49752 20.4754C8.99244 20.4278 9.47784 20.5896 9.84902 20.9132L11.2291 22.1219C11.6669 22.5122 12.3236 22.5122 12.7709 22.1219L14.151 20.9132C14.5222 20.5896 15.0076 20.4278 15.5025 20.4754L17.3299 20.6467C17.9104 20.7038 18.4434 20.3136 18.5767 19.7425L18.9859 17.9532C19.0906 17.4678 19.3952 17.0586 19.8235 16.8016L21.4034 15.8594C21.9078 15.5643 22.1077 14.9362 21.8793 14.3937L21.1559 12.709Z"
+        />
+        <path
+          className="proto-compliance__check"
+          d="M8.43091 12.5662L10.8103 14.9456L15.5691 10.1867"
+        />
+      </svg>
     </span>
   );
 }
@@ -1044,6 +1063,10 @@ const PLACEHOLDERS: Record<
   assistant: {
     title: 'Assistant',
     body: 'Ask Eudia anything across your matters. This pane is a placeholder in the prototype.',
+  },
+  compliance: {
+    title: 'Compliance',
+    body: 'Compliance tables and reviews would appear here.',
   },
   intelligence: {
     title: 'Intelligence Hub',
@@ -2705,6 +2728,14 @@ export default function AllProjectsApp(): ReactElement {
             >
               <AskAiIcon />
               <span className="proto-nav-btn__label">Assistant</span>
+            </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'compliance' && 'is-active')}
+              type="button"
+              onClick={() => setView('compliance')}
+            >
+              <ComplianceIcon />
+              <span className="proto-nav-btn__label">Compliance</span>
             </button>
             <button
               className={clsx('proto-nav-btn', view === 'knowledge' && 'is-active')}
