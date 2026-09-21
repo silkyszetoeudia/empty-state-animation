@@ -400,9 +400,9 @@ const LUCIDE_SHAPES: Record<Exclude<LucideName, 'loader-pinwheel'>, LucideShape[
     {tag: 'path', d: 'M12 12L16 14', group: 'proto-clock-hour'},
   ],
   library: [
-    {tag: 'path', d: 'M12 6v14', group: 'proto-lib-book'},
-    {tag: 'path', d: 'M8 8v12', group: 'proto-lib-book'},
-    {tag: 'path', d: 'M4 4v16', group: 'proto-lib-book'},
+    {tag: 'path', d: 'M4 4v16', group: 'proto-lib-book-a'},
+    {tag: 'path', d: 'M8 8v12', group: 'proto-lib-book-b'},
+    {tag: 'path', d: 'M12 6v14', group: 'proto-lib-book-c'},
     {tag: 'path', d: 'm16 6 4 14', group: 'proto-lib-fall'},
   ],
   user: [

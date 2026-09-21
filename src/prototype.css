@@ -345,6 +345,9 @@
   .proto-nav-btn:hover:not(.is-active) .proto-plus-mark,
   .proto-nav-btn:hover:not(.is-active) .proto-users-back,
   .proto-nav-btn:hover:not(.is-active) .proto-lib-fall,
+  .proto-nav-btn:hover:not(.is-active) .proto-lib-book-a,
+  .proto-nav-btn:hover:not(.is-active) .proto-lib-book-b,
+  .proto-nav-btn:hover:not(.is-active) .proto-lib-book-c,
   .proto-nav-btn:hover:not(.is-active) .proto-hs-clock,
   .proto-nav-btn:hover:not(.is-active) .proto-cap-icon,
   .proto-nav-btn:hover:not(.is-active) .proto-opp-barrel,
@@ -576,13 +579,43 @@
   }
 }
 
-.proto-lib-fall {
+.proto-lib-fall,
+.proto-lib-book-a,
+.proto-lib-book-b,
+.proto-lib-book-c {
   transform-box: view-box;
+}
+
+.proto-lib-fall {
   transform-origin: 20px 20px;
+}
+
+.proto-lib-book-a {
+  transform-origin: 4px 20px;
+}
+
+.proto-lib-book-b {
+  transform-origin: 8px 20px;
+}
+
+.proto-lib-book-c {
+  transform-origin: 12px 20px;
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-lib-fall {
   animation: proto-lib-stand 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-lib-book-a {
+  animation: proto-lib-nudge-a 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-lib-book-b {
+  animation: proto-lib-nudge-b 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-lib-book-c {
+  animation: proto-lib-nudge-c 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes proto-lib-stand {
@@ -593,6 +626,39 @@
 
   50% {
     transform: rotate(9.2deg);
+  }
+}
+
+@keyframes proto-lib-nudge-a {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes proto-lib-nudge-b {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes proto-lib-nudge-c {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(-9deg);
   }
 }
 
