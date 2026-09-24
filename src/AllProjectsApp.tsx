@@ -463,7 +463,7 @@ const LUCIDE_MOTION_CLASS: Partial<Record<LucideName, string>> = {
   'square-plus': 'proto-feedback-icon',
 };
 
-const LUCIDE_DRAW_GROUPS = new Set(['proto-user-head']);
+const LUCIDE_DRAW_GROUPS = new Set<string>();
 
 function lucideGroups(shapes: LucideShape[]): string[] {
   const groups: string[] = [];
