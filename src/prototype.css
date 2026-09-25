@@ -292,7 +292,7 @@
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-ask-ai__ring {
-  animation: proto-ask-ai-draw 220ms ease-out both;
+  animation: proto-ask-ai-draw-half 220ms ease-out both;
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-ask-ai__ring--b {
@@ -307,6 +307,18 @@
   from {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes proto-ask-ai-draw-half {
+  from {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0.25;
   }
 
   to {
@@ -341,7 +353,8 @@
   .proto-nav-btn:hover:not(.is-active) .proto-clock-minute,
   .proto-nav-btn:hover:not(.is-active) .proto-set-knob-a,
   .proto-nav-btn:hover:not(.is-active) .proto-set-knob-b,
-  .proto-nav-btn:hover:not(.is-active) .proto-help-icon svg,
+  .proto-nav-btn:hover:not(.is-active) .proto-help-mark,
+  .proto-nav-btn:hover:not(.is-active) .proto-help-v2-mark,
   .proto-nav-btn:hover:not(.is-active) .proto-plus-mark,
   .proto-nav-btn:hover:not(.is-active) .proto-users-back,
   .proto-nav-btn:hover:not(.is-active) .proto-user-head,
@@ -513,20 +526,30 @@
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-clock-minute {
-  animation: proto-clock-spin 320ms ease-out both;
+  animation: proto-clock-minute-to-four 480ms ease-out both;
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-clock-hour {
-  animation: proto-clock-spin 480ms ease-out both;
+  animation: proto-clock-hour-to-four 480ms ease-out both;
 }
 
-@keyframes proto-clock-spin {
+@keyframes proto-clock-minute-to-four {
   from {
-    transform: rotate(0deg);
+    transform: rotate(-60deg);
   }
 
   to {
-    transform: rotate(360deg);
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes proto-clock-hour-to-four {
+  from {
+    transform: rotate(-30deg);
+  }
+
+  to {
+    transform: rotate(0deg);
   }
 }
 
@@ -552,11 +575,11 @@
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-set-knob-a {
-  animation: proto-knob-a 480ms ease-in-out both;
+  animation: proto-knob-a 380ms ease-in-out both;
 }
 
 .proto-nav-btn:hover:not(.is-active) .proto-set-knob-b {
-  animation: proto-knob-b 480ms ease-in-out both;
+  animation: proto-knob-b 380ms ease-in-out both;
 }
 
 @keyframes proto-knob-a {
@@ -566,7 +589,7 @@
   }
 
   50% {
-    transform: translate(8px, 0);
+    transform: translate(6px, 0);
   }
 }
 
@@ -577,7 +600,7 @@
   }
 
   50% {
-    transform: translate(-8px, 0);
+    transform: translate(-6px, 0);
   }
 }
 
@@ -668,22 +691,47 @@
   perspective: 48px;
 }
 
-.proto-help-icon svg {
-  transform-origin: center;
+.proto-help-mark {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
   transform-style: preserve-3d;
 }
 
-.proto-nav-btn:hover:not(.is-active) .proto-help-icon svg {
-  animation: proto-help-flip 480ms ease-in-out both;
+.proto-nav-btn:hover:not(.is-active) .proto-help-mark {
+  animation: proto-help-flip 360ms ease-in-out both;
 }
 
 @keyframes proto-help-flip {
   from {
-    transform: rotateY(0deg);
+    transform: rotateY(180deg);
   }
 
   to {
     transform: rotateY(360deg);
+  }
+}
+
+.proto-help-v2-mark {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-help-v2-mark {
+  animation: proto-help-v2-wiggle 480ms ease-in-out both;
+}
+
+@keyframes proto-help-v2-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  30% {
+    transform: rotate(-12deg);
+  }
+
+  70% {
+    transform: rotate(12deg);
   }
 }
 

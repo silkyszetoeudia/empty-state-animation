@@ -9,6 +9,7 @@ import {
   type ReactElement,
 } from 'react';
 import FileIconsPage from './FileIconsPage';
+import FilePickerPage from './FilePickerPage';
 
 function clsx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ');
@@ -34,6 +35,7 @@ type ShellView =
   | 'connectors'
   | 'twin'
   | 'file-icons'
+  | 'file-picker'
   | 'projects'
   | 'chats'
   | 'configure'
@@ -43,6 +45,7 @@ type ShellView =
   | 'settings-connectors'
   | 'notifications'
   | 'help'
+  | 'help-v2'
   | 'feedback';
 
 const VIEW_PATHS: Record<ShellView, string> = {
@@ -60,6 +63,7 @@ const VIEW_PATHS: Record<ShellView, string> = {
   connectors: '/connectors-ring',
   twin: '/digital-twin',
   'file-icons': '/file-icons',
+  'file-picker': '/file-picker',
   projects: '/projects',
   chats: '/chat-history',
   configure: '/configure',
@@ -69,10 +73,11 @@ const VIEW_PATHS: Record<ShellView, string> = {
   'settings-connectors': '/connectors',
   notifications: '/notifications',
   help: '/help',
+  'help-v2': '/help-v2',
   feedback: '/feedback',
 };
 
-const HIDDEN_VIEWS = new Set<ShellView>(['file-icons']);
+const HIDDEN_VIEWS = new Set<ShellView>(['file-icons', 'help-v2']);
 
 function viewFromLocation(pathname: string): ShellView {
   const path = pathname.replace(/\/+$/, '') || '/';
@@ -369,6 +374,7 @@ type LucideName =
   | 'unplug'
   | 'bell'
   | 'circle-help'
+  | 'circle-help-v2'
   | 'square-plus'
   | 'settings-2'
   | 'chevron-down'
@@ -432,6 +438,11 @@ const LUCIDE_SHAPES: Record<Exclude<LucideName, 'loader-pinwheel'>, LucideShape[
     {tag: 'path', d: 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3', group: 'proto-help-mark'},
     {tag: 'path', d: 'M12 17h.01', group: 'proto-help-mark'},
   ],
+  'circle-help-v2': [
+    {tag: 'circle', cx: 12, cy: 12, r: 10, group: 'proto-help-v2-ring'},
+    {tag: 'path', d: 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3', group: 'proto-help-v2-mark'},
+    {tag: 'path', d: 'M12 17h.01', group: 'proto-help-v2-mark'},
+  ],
   'square-plus': [
     {tag: 'rect', width: 18, height: 18, x: 3, y: 3, rx: 2, group: 'proto-plus-box'},
     {tag: 'path', d: 'M8 12h8', group: 'proto-plus-mark'},
@@ -460,6 +471,7 @@ const LUCIDE_MOTION_CLASS: Partial<Record<LucideName, string>> = {
   unplug: 'proto-unplug-icon',
   bell: 'proto-stroke-icon--tilt',
   'circle-help': 'proto-help-icon',
+  'circle-help-v2': 'proto-help-v2-icon',
   'square-plus': 'proto-feedback-icon',
 };
 
@@ -1052,6 +1064,7 @@ const PLACEHOLDERS: Record<
     | 'connectors'
     | 'twin'
     | 'file-icons'
+    | 'file-picker'
   >,
   {title: string; body: string; href?: string}
 > = {
@@ -1102,6 +1115,10 @@ const PLACEHOLDERS: Record<
   },
   help: {
     title: 'Get help',
+    body: 'Help and support resources would appear here.',
+  },
+  'help-v2': {
+    title: 'Get help v2',
     body: 'Help and support resources would appear here.',
   },
   feedback: {
@@ -2893,6 +2910,14 @@ export default function AllProjectsApp(): ReactElement {
               <span className="proto-nav-dot" aria-hidden="true" />
               <span className="proto-nav-btn__label">Digital Twin Creation</span>
             </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'file-picker' && 'is-active')}
+              type="button"
+              onClick={() => setView('file-picker')}
+            >
+              <span className="proto-nav-dot" aria-hidden="true" />
+              <span className="proto-nav-btn__label">File picker</span>
+            </button>
           </div>
         </div>
         <div className="proto-sidebar__footer">
@@ -3288,6 +3313,8 @@ export default function AllProjectsApp(): ReactElement {
           <AcquisitionFillPage />
         ) : view === 'file-icons' ? (
           <FileIconsPage />
+        ) : view === 'file-picker' ? (
+          <FilePickerPage />
         ) : (
           <div className="proto-card">
             <div className="proto-placeholder">
