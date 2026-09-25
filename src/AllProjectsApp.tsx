@@ -24,9 +24,11 @@ type ShellView =
   | 'note'
   | 'assistant'
   | 'compliance'
+  | 'dashboards'
   | 'knowledge'
   | 'intelligence'
   | 'opportunities'
+  | 'contract-workspace'
   | 'horizon'
   | 'acquisition'
   | 'acq-fill'
@@ -52,9 +54,11 @@ const VIEW_PATHS: Record<ShellView, string> = {
   note: '/',
   assistant: '/assistant',
   compliance: '/compliance',
+  dashboards: '/dashboards',
   knowledge: '/knowledge',
   intelligence: '/intelligence-hub',
   opportunities: '/opportunities',
+  'contract-workspace': '/contract-workspace',
   horizon: '/horizon-scanning',
   acquisition: '/acquisition',
   'acq-fill': '/acquisition-filling',
@@ -373,6 +377,8 @@ type LucideName =
   | 'users'
   | 'unplug'
   | 'bell'
+  | 'layout-grid'
+  | 'feather'
   | 'circle-help'
   | 'circle-help-v2'
   | 'square-plus'
@@ -433,6 +439,17 @@ const LUCIDE_SHAPES: Record<Exclude<LucideName, 'loader-pinwheel'>, LucideShape[
     {tag: 'path', d: 'M10.268 21a2 2 0 0 0 3.464 0'},
     {tag: 'path', d: 'M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326'},
   ],
+  'layout-grid': [
+    {tag: 'rect', width: 7, height: 7, x: 3, y: 3, rx: 1, group: 'proto-dash-tl'},
+    {tag: 'rect', width: 7, height: 7, x: 14, y: 3, rx: 1, group: 'proto-dash-tr'},
+    {tag: 'rect', width: 7, height: 7, x: 14, y: 14, rx: 1, group: 'proto-dash-br'},
+    {tag: 'rect', width: 7, height: 7, x: 3, y: 14, rx: 1, group: 'proto-dash-bl'},
+  ],
+  feather: [
+    {tag: 'path', d: 'M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z', group: 'proto-feather-body'},
+    {tag: 'path', d: 'M16 8 2 22', group: 'proto-feather-body'},
+    {tag: 'path', d: 'M17.5 15H9', group: 'proto-feather-body'},
+  ],
   'circle-help': [
     {tag: 'circle', cx: 12, cy: 12, r: 10, group: 'proto-help-ring'},
     {tag: 'path', d: 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3', group: 'proto-help-mark'},
@@ -470,6 +487,8 @@ const LUCIDE_MOTION_CLASS: Partial<Record<LucideName, string>> = {
   users: 'proto-users-icon',
   unplug: 'proto-unplug-icon',
   bell: 'proto-stroke-icon--tilt',
+  'layout-grid': 'proto-dash-icon',
+  feather: 'proto-feather-icon',
   'circle-help': 'proto-help-icon',
   'circle-help-v2': 'proto-help-v2-icon',
   'square-plus': 'proto-feedback-icon',
@@ -1081,9 +1100,17 @@ const PLACEHOLDERS: Record<
     title: 'Compliance',
     body: 'Compliance tables and reviews would appear here.',
   },
+  dashboards: {
+    title: 'Dashboards',
+    body: 'Saved dashboards would appear here.',
+  },
   intelligence: {
     title: 'Intelligence Hub',
     body: 'Cross-matter signals and reporting would appear here.',
+  },
+  'contract-workspace': {
+    title: 'Contract workspace',
+    body: 'Contract workspace tables and reviews would appear here.',
   },
   chats: {
     title: 'Chat history',
@@ -2755,6 +2782,14 @@ export default function AllProjectsApp(): ReactElement {
               <span className="proto-nav-btn__label">Compliance</span>
             </button>
             <button
+              className={clsx('proto-nav-btn', view === 'dashboards' && 'is-active')}
+              type="button"
+              onClick={() => setView('dashboards')}
+            >
+              <LucideIcon name="layout-grid" size={16} />
+              <span className="proto-nav-btn__label">Dashboards</span>
+            </button>
+            <button
               className={clsx('proto-nav-btn', view === 'knowledge' && 'is-active')}
               type="button"
               onClick={() => setView('knowledge')}
@@ -2785,6 +2820,14 @@ export default function AllProjectsApp(): ReactElement {
             >
               <FigmaNavIcon name="telescope" />
               <span className="proto-nav-btn__label">Opportunities</span>
+            </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'contract-workspace' && 'is-active')}
+              type="button"
+              onClick={() => setView('contract-workspace')}
+            >
+              <LucideIcon name="feather" size={16} />
+              <span className="proto-nav-btn__label">Contract workspace</span>
             </button>
           </div>
 

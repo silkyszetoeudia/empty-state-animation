@@ -364,6 +364,12 @@
   .proto-nav-btn:hover:not(.is-active) .proto-lib-book-c,
   .proto-nav-btn:hover:not(.is-active) .proto-hs-clock,
   .proto-nav-btn:hover:not(.is-active) .proto-cap-icon,
+  .proto-nav-btn:hover:not(.is-active) .proto-feather-icon,
+  .proto-nav-btn:hover:not(.is-active) .proto-feather-body,
+  .proto-nav-btn:hover:not(.is-active) .proto-dash-tl,
+  .proto-nav-btn:hover:not(.is-active) .proto-dash-tr,
+  .proto-nav-btn:hover:not(.is-active) .proto-dash-br,
+  .proto-nav-btn:hover:not(.is-active) .proto-dash-bl,
   .proto-nav-btn:hover:not(.is-active) .proto-opp-barrel,
   .proto-nav-btn:hover:not(.is-active) .proto-plug-a,
   .proto-nav-btn:hover:not(.is-active) .proto-plug-b,
@@ -440,6 +446,8 @@
 
 .proto-nav-btn:hover:not(.is-active) .proto-stroke-icon--tilt .proto-stroke-icon__path,
 .proto-nav-btn:hover:not(.is-active) .proto-cap-icon .proto-stroke-icon__path,
+.proto-nav-btn:hover:not(.is-active) .proto-feather-icon .proto-stroke-icon__path,
+.proto-nav-btn:hover:not(.is-active) .proto-dash-icon .proto-stroke-icon__path,
 .proto-nav-btn:hover:not(.is-active) .proto-user-icon .proto-stroke-icon__path {
   animation: none;
 }
@@ -471,6 +479,122 @@
 
   50% {
     transform: rotate(-20deg);
+  }
+}
+
+.proto-feather-body {
+  transform-box: view-box;
+  transform-origin: 100% 0;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-feather-body {
+  animation: proto-feather-in 280ms ease-out both;
+}
+
+@keyframes proto-feather-in {
+  from {
+    transform: translate(1.5px, -1.5px) scale(0.62);
+  }
+
+  to {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.proto-dash-tl,
+.proto-dash-tr,
+.proto-dash-br,
+.proto-dash-bl {
+  transform-box: fill-box;
+}
+
+.proto-dash-tl {
+  transform-origin: 100% 100%;
+}
+
+.proto-dash-tr {
+  transform-origin: 0 100%;
+}
+
+.proto-dash-bl {
+  transform-origin: 100% 0;
+}
+
+.proto-dash-br {
+  transform-origin: 0 0;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-dash-tl,
+.proto-nav-btn:hover:not(.is-active) .proto-dash-tr,
+.proto-nav-btn:hover:not(.is-active) .proto-dash-br,
+.proto-nav-btn:hover:not(.is-active) .proto-dash-bl {
+  animation: 300ms both;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-dash-tl {
+  animation-name: proto-dash-tl;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-dash-tr {
+  animation-name: proto-dash-tr;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-dash-br {
+  animation-name: proto-dash-br;
+}
+
+.proto-nav-btn:hover:not(.is-active) .proto-dash-bl {
+  animation-name: proto-dash-bl;
+}
+
+@keyframes proto-dash-tl {
+  0% {
+    transform: scale(0);
+    animation-timing-function: ease-out;
+  }
+
+  22%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes proto-dash-tr {
+  0%,
+  22% {
+    transform: scale(0);
+    animation-timing-function: ease-out;
+  }
+
+  44%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes proto-dash-br {
+  0%,
+  44% {
+    transform: scale(0);
+    animation-timing-function: ease-out;
+  }
+
+  66%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes proto-dash-bl {
+  0%,
+  66% {
+    transform: scale(0);
+    animation-timing-function: ease-out;
+  }
+
+  88%,
+  100% {
+    transform: scale(1);
   }
 }
 
