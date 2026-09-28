@@ -366,6 +366,8 @@
   .proto-nav-btn:hover:not(.is-active) .proto-cap-icon,
   .proto-nav-btn:hover:not(.is-active) .proto-feather-icon,
   .proto-nav-btn:hover:not(.is-active) .proto-feather-body,
+  .proto-nav-btn:hover:not(.is-active) .proto-feather-quill,
+  .proto-nav-btn:hover:not(.is-active) .proto-feather-barb,
   .proto-nav-btn:hover:not(.is-active) .proto-dash-tl,
   .proto-nav-btn:hover:not(.is-active) .proto-dash-tr,
   .proto-nav-btn:hover:not(.is-active) .proto-dash-br,
@@ -446,7 +448,6 @@
 
 .proto-nav-btn:hover:not(.is-active) .proto-stroke-icon--tilt .proto-stroke-icon__path,
 .proto-nav-btn:hover:not(.is-active) .proto-cap-icon .proto-stroke-icon__path,
-.proto-nav-btn:hover:not(.is-active) .proto-feather-icon .proto-stroke-icon__path,
 .proto-nav-btn:hover:not(.is-active) .proto-dash-icon .proto-stroke-icon__path,
 .proto-nav-btn:hover:not(.is-active) .proto-user-icon .proto-stroke-icon__path {
   animation: none;
@@ -482,22 +483,27 @@
   }
 }
 
-.proto-feather-body {
-  transform-box: view-box;
-  transform-origin: 100% 0;
+.proto-nav-btn:hover:not(.is-active) .proto-feather-body .proto-stroke-icon__path {
+  animation: proto-feather-outline-draw 90ms ease-out both;
 }
 
-.proto-nav-btn:hover:not(.is-active) .proto-feather-body {
-  animation: proto-feather-in 280ms ease-out both;
+.proto-nav-btn:hover:not(.is-active) .proto-feather-quill .proto-stroke-icon__path {
+  animation: proto-ask-ai-draw 220ms ease-out 90ms both;
 }
 
-@keyframes proto-feather-in {
+.proto-nav-btn:hover:not(.is-active) .proto-feather-barb .proto-stroke-icon__path {
+  animation: proto-ask-ai-draw 140ms ease-out 150ms both;
+}
+
+@keyframes proto-feather-outline-draw {
   from {
-    transform: translate(1px, -1px) scale(0.74);
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0.5;
   }
 
   to {
-    transform: translate(0, 0) scale(1);
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
   }
 }
 
