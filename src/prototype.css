@@ -498,7 +498,7 @@
 @keyframes proto-feather-outline-draw {
   from {
     stroke-dasharray: 1;
-    stroke-dashoffset: 0.5;
+    stroke-dashoffset: 0.25;
   }
 
   to {
