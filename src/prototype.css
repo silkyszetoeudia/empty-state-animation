@@ -493,7 +493,7 @@
 
 @keyframes proto-feather-in {
   from {
-    transform: translate(1.5px, -1.5px) scale(0.62);
+    transform: translate(1px, -1px) scale(0.74);
   }
 
   to {
