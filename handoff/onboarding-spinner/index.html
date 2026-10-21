@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Onboarding spinner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --base-container: #f9fafb;
+      --base-card: #fff;
+      --base-border: #dce2e8;
+      --base-foreground: #122933;
+      --base-muted-foreground: #5c7079;
+      --proto-primary: #2b75bd;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      background: var(--base-container);
+      color: var(--base-foreground);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .onboard {
+      background: var(--base-container);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      min-height: 0;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .onboard__top {
+      align-items: center;
+      display: flex;
+      flex-shrink: 0;
+      padding: 32px 48px;
+      width: 100%;
+    }
+
+    .onboard__logo {
+      align-items: center;
+      background: transparent;
+      border: none;
+      display: inline-flex;
+      height: 24px;
+      padding: 0;
+      width: 24px;
+    }
+
+    .onboard__logo img {
+      display: block;
+      height: 24px;
+      object-fit: contain;
+      width: 24px;
+    }
+
+    .onboard__body {
+      align-items: center;
+      display: flex;
+      flex: 1 1 0;
+      justify-content: center;
+      min-height: 0;
+      overflow: auto;
+      padding: 0 48px 88px;
+      width: 100%;
+    }
+
+    .onboard__content {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      max-width: 576px;
+      width: 100%;
+    }
+
+    .onboard-spin {
+      --spin-tile: 67.28px;
+      --spin-icon: 45.71px;
+      --spin-step-x: 81.26px;
+      --spin-arc-y: 8.45px;
+      --spin-track-w: 547.17px;
+      --spin-track-h: 152.76px;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      min-height: 176px;
+      position: relative;
+      width: var(--spin-track-w);
+    }
+
+    .onboard-spin__track {
+      height: var(--spin-track-h);
+      overflow: hidden;
+      position: relative;
+      width: var(--spin-track-w);
+    }
+
+    .onboard-spin__tile {
+      --slot: 0;
+      align-items: center;
+      background: var(--base-card);
+      border: 1px solid var(--base-border);
+      border-radius: 8px;
+      display: flex;
+      height: var(--spin-tile);
+      justify-content: center;
+      left: 50%;
+      margin-left: calc(var(--spin-tile) / -2);
+      opacity: 0.4;
+      padding: 10.79px;
+      pointer-events: none;
+      position: absolute;
+      top: 0.63px;
+      transform: translateX(calc(var(--slot) * var(--spin-step-x)))
+        translateY(calc(var(--slot) * var(--slot) * var(--spin-arc-y)))
+        rotate(calc(var(--slot) * 12deg));
+      transition:
+        transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 400ms ease,
+        box-shadow 400ms ease;
+      width: var(--spin-tile);
+      z-index: 2;
+    }
+
+    .onboard-spin__tile img {
+      display: block;
+      height: var(--spin-icon);
+      object-fit: contain;
+      width: var(--spin-icon);
+    }
+
+    .onboard-spin__tile.is-center {
+      box-shadow:
+        0 4px 6px -2px rgba(0, 0, 0, 0.05),
+        0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      opacity: 1;
+      z-index: 4;
+    }
+
+    .onboard-spin__tile.is-off {
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .onboard-spin__tile.is-wrap {
+      transition: none;
+    }
+
+    .onboard-spin__fade {
+      height: var(--spin-track-h);
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      width: 140px;
+      z-index: 6;
+    }
+
+    .onboard-spin__fade--left {
+      background: linear-gradient(90deg, var(--base-container) 18%, transparent 100%);
+      left: 0;
+    }
+
+    .onboard-spin__fade--right {
+      background: linear-gradient(270deg, var(--base-container) 18%, transparent 100%);
+      right: 0;
+    }
+
+    .onboard-spin__name {
+      color: var(--base-muted-foreground);
+      font-size: 14px;
+      font-weight: 500;
+      left: 0;
+      line-height: 20px;
+      margin: 0;
+      min-height: 20px;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      text-align: center;
+      top: 120px;
+      transition: opacity 140ms ease;
+      z-index: 5;
+    }
+
+    .onboard-spin__name.is-in { opacity: 1; }
+
+    .onboard__copy {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 12px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .onboard__title {
+      color: var(--base-foreground);
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .onboard__desc {
+      color: var(--base-muted-foreground);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      margin: 0;
+    }
+
+    .onboard__cta {
+      align-items: center;
+      background: var(--proto-primary);
+      border: none;
+      border-radius: 8px;
+      box-shadow:
+        0 1px 1.5px rgba(0, 0, 0, 0.1),
+        0 1px 1px rgba(0, 0, 0, 0.06);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      height: 40px;
+      justify-content: center;
+      line-height: 24px;
+      padding: 8px 24px;
+      width: 200px;
+    }
+
+    .onboard__cta:hover { filter: brightness(0.96); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .onboard-spin__tile,
+      .onboard-spin__name { transition: none; }
+      .onboard-spin__name { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="onboard">
+    <header class="onboard__top">
+      <div class="onboard__logo">
+        <img src="icons/onboard-eudia.svg" alt="" width="24" height="24" />
+      </div>
+    </header>
+    <div class="onboard__body">
+      <div class="onboard__content">
+        <div class="onboard-spin">
+          <div class="onboard-spin__track" id="track" aria-hidden="true">
+            <div class="onboard-spin__fade onboard-spin__fade--left"></div>
+            <div class="onboard-spin__fade onboard-spin__fade--right"></div>
+          </div>
+          <p class="onboard-spin__name is-in" id="name" aria-live="polite"></p>
+        </div>
+        <div class="onboard__copy">
+          <h1 class="onboard__title">All set, John!</h1>
+          <p class="onboard__desc">
+            These files become your fact library, containing the approved claims and entity details
+            Eudia uses to substantiate your compliance reviews. You can add more at any time.
+          </p>
+        </div>
+        <button class="onboard__cta" type="button">Get started</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const TYPES = [
+      {name: 'General Assistant', icon: 'icons/sigma.svg'},
+      {name: 'Compliance', icon: 'icons/compliance.svg'},
+      {name: 'Contracting', icon: 'icons/contracting.svg'},
+      {name: 'Corporate Governance', icon: 'icons/corp-governance.svg'},
+      {name: 'Intellectual Property', icon: 'icons/intel-property.svg'},
+      {name: 'Litigation', icon: 'icons/litigation.svg'},
+      {name: 'M&A', icon: 'icons/ma.svg'},
+      {name: 'Real Estate', icon: 'icons/real-estate.svg'},
+      {name: 'Regulatory Compliance', icon: 'icons/reg-compliance.svg'},
+      {name: 'Solicitation', icon: 'icons/solicitation.svg'},
+    ];
+    const HOLD_MS = 1200;
+    const MOVE_MS = 400;
+    const NAME_FADE_MS = 140;
+    const count = TYPES.length;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const track = document.getElementById('track');
+    const nameEl = document.getElementById('name');
+
+    function slot(index, center) {
+      let delta = ((index - center) % count + count) % count;
+      if (delta > Math.floor((count - 1) / 2)) delta -= count;
+      return delta;
+    }
+
+    const tiles = TYPES.map((item) => {
+      const tile = document.createElement('div');
+      tile.className = 'onboard-spin__tile';
+      const img = document.createElement('img');
+      img.src = item.icon;
+      img.alt = '';
+      img.width = 46;
+      img.height = 46;
+      tile.appendChild(img);
+      track.insertBefore(tile, track.firstChild);
+      return tile;
+    });
+
+    let center = 0;
+    let prev = TYPES.map((_, index) => slot(index, 0));
+
+    function paint(nameIn) {
+      const slots = TYPES.map((_, index) => slot(index, center));
+      tiles.forEach((tile, index) => {
+        const value = slots[index];
+        tile.style.setProperty('--slot', String(value));
+        tile.classList.toggle('is-center', value === 0);
+        tile.classList.toggle('is-off', Math.abs(value) > 3);
+        tile.classList.toggle('is-wrap', Math.abs(value - prev[index]) > 4);
+      });
+      nameEl.textContent = TYPES[center].name;
+      nameEl.classList.toggle('is-in', reduce || nameIn);
+      prev = slots;
+    }
+
+    paint(true);
+
+    if (!reduce) {
+      const later = (fn, ms) => window.setTimeout(fn, ms);
+      let first = true;
+
+      function loop() {
+        later(() => {
+          nameEl.classList.remove('is-in');
+          later(() => {
+            center = (center + 1) % count;
+            paint(false);
+            later(() => {
+              nameEl.classList.add('is-in');
+              loop();
+            }, MOVE_MS);
+          }, NAME_FADE_MS);
+        }, first ? 500 : HOLD_MS);
+        first = false;
+      }
+
+      loop();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 2147207491">
+<path id="Badge" d="M16 31C24.2843 31 31 24.2843 31 16C31 7.71573 24.2843 1 16 1C7.71573 1 1 7.71573 1 16C1 24.2843 7.71573 31 16 31Z" fill="#E7F0F8" stroke-width="2" stroke="#1366B6"/>
+<path id="Plus" d="M16 10V16M16 16V22M16 16H10M16 16H22" stroke-width="2.5" stroke-linecap="round" stroke="#1366B6"/>
+</g>
+</svg>

@@ -10,6 +10,7 @@ import {
 } from 'react';
 import FileIconsPage from './FileIconsPage';
 import FilePickerPage from './FilePickerPage';
+import TemplateStates from './TemplateStates';
 
 function clsx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ');
@@ -38,6 +39,7 @@ type ShellView =
   | 'twin'
   | 'file-icons'
   | 'file-picker'
+  | 'template-states'
   | 'projects'
   | 'chats'
   | 'configure'
@@ -68,6 +70,7 @@ const VIEW_PATHS: Record<ShellView, string> = {
   twin: '/digital-twin',
   'file-icons': '/file-icons',
   'file-picker': '/file-picker',
+  'template-states': '/template-states',
   projects: '/projects',
   chats: '/chat-history',
   configure: '/configure',
@@ -1096,6 +1099,7 @@ const PLACEHOLDERS: Record<
     | 'twin'
     | 'file-icons'
     | 'file-picker'
+    | 'template-states'
   >,
   {title: string; body: string; href?: string}
 > = {
@@ -2973,6 +2977,14 @@ export default function AllProjectsApp(): ReactElement {
               <span className="proto-nav-dot" aria-hidden="true" />
               <span className="proto-nav-btn__label">File picker</span>
             </button>
+            <button
+              className={clsx('proto-nav-btn', view === 'template-states' && 'is-active')}
+              type="button"
+              onClick={() => setView('template-states')}
+            >
+              <span className="proto-nav-dot" aria-hidden="true" />
+              <span className="proto-nav-btn__label">Template States</span>
+            </button>
           </div>
         </div>
         <div className="proto-sidebar__footer">
@@ -3370,6 +3382,13 @@ export default function AllProjectsApp(): ReactElement {
           <FileIconsPage />
         ) : view === 'file-picker' ? (
           <FilePickerPage />
+        ) : view === 'template-states' ? (
+          <div className="proto-card">
+            <div className="proto-placeholder">
+              <h1>{PLACEHOLDERS.assistant.title}</h1>
+              <p>{PLACEHOLDERS.assistant.body}</p>
+            </div>
+          </div>
         ) : (
           <div className="proto-card">
             <div className="proto-placeholder">
@@ -3389,6 +3408,7 @@ export default function AllProjectsApp(): ReactElement {
           </div>
         )}
       </main>
+      {view === 'template-states' ? <TemplateStates /> : null}
     </div>
   );
 }

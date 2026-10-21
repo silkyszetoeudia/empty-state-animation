@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open book closes</title>
+  <script>
+    (function () {
+      var t = new URLSearchParams(location.search).get('t');
+      if (t == null || !/^\d+$/.test(t)) return;
+      document.documentElement.dataset.freeze = t;
+      document.write(
+        '<style>.anim{animation-delay:-' + t + 'ms !important;animation-play-state:paused !important}</style>'
+      );
+    })();
+  </script>
+  <style>
+    :root { --dur: 5s; }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #d5d5d5;
+      font-family: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #24323a;
+    }
+
+    .stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .preview {
+      position: relative;
+      width: 384px;
+      height: 384px;
+      cursor: pointer;
+    }
+
+    .world {
+      width: 384px;
+      height: 384px;
+      perspective: 900px;
+    }
+
+    .scene {
+      position: relative;
+      width: 384px;
+      height: 384px;
+      transform-style: preserve-3d;
+    }
+
+    .layer,
+    .hinge {
+      position: absolute;
+      inset: 0;
+      width: 384px;
+      height: 384px;
+      overflow: visible;
+    }
+
+    .hinge {
+      transform-origin: 50% 50%;
+      transform-style: preserve-3d;
+    }
+
+    .hinge svg { animation: page-fade var(--dur) linear infinite; }
+
+    svg { display: block; overflow: visible; }
+
+    .badge {
+      position: absolute;
+      inset: 0;
+      width: 384px;
+      height: 384px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .hinge.left { animation: shut-left var(--dur) linear infinite; }
+    .hinge.right { animation: shut-right var(--dur) linear infinite; }
+    .spine { animation: spine-fade var(--dur) linear infinite; }
+    .cover {
+      animation: cover-in var(--dur) linear infinite;
+      transform-origin: 50% 52%;
+      backface-visibility: hidden;
+    }
+
+    .shadow {
+      position: absolute;
+      left: 56px;
+      top: 312px;
+      width: 272px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(36, 50, 58, 0.16);
+      filter: blur(7px);
+      animation: shadow-shrink var(--dur) linear infinite;
+      transform-origin: 50% 50%;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #3d5160;
+      font: 500 13px/1 "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      cursor: pointer;
+      padding: 8px 12px;
+    }
+
+    button:hover { color: #1366b6; }
+
+    @keyframes shut-left {
+      0%, 14% { transform: rotateY(0deg); animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.3); }
+      20% { transform: rotateY(8deg); animation-timing-function: cubic-bezier(0.45, 0.05, 0.2, 1); }
+      36% { transform: rotateY(-48deg); animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
+      46%, 68% { transform: rotateY(-68deg); animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+      90%, 100% { transform: rotateY(0deg); }
+    }
+
+    @keyframes shut-right {
+      0%, 14% { transform: rotateY(0deg); animation-timing-function: cubic-bezier(0.4, 0, 0.7, 0.3); }
+      20% { transform: rotateY(-8deg); animation-timing-function: cubic-bezier(0.45, 0.05, 0.2, 1); }
+      36% { transform: rotateY(48deg); animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
+      46%, 68% { transform: rotateY(68deg); animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+      90%, 100% { transform: rotateY(0deg); }
+    }
+
+    @keyframes page-fade {
+      0%, 34% { opacity: 1; }
+      41%, 70% { opacity: 0; }
+      84%, 100% { opacity: 1; }
+    }
+
+    @keyframes cover-in {
+      0%, 39% { opacity: 0; transform: rotateY(28deg); animation-timing-function: cubic-bezier(0.16, 0.7, 0.2, 1); }
+      50%, 66% { opacity: 1; transform: rotateY(0deg); animation-timing-function: linear; }
+      76% { opacity: 0; transform: rotateY(24deg); }
+      100% { opacity: 0; transform: rotateY(28deg); }
+    }
+
+    @keyframes spine-fade {
+      0%, 28% { opacity: 1; }
+      42%, 72% { opacity: 0; }
+      86%, 100% { opacity: 1; }
+    }
+
+    @keyframes shadow-shrink {
+      0%, 16% { transform: scaleX(1); opacity: 1; }
+      50%, 66% { transform: scaleX(0.36); opacity: 0.7; }
+      90%, 100% { transform: scaleX(1); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hinge.left,
+      .hinge.right,
+      .hinge svg,
+      .spine,
+      .cover,
+      .shadow { animation: none; }
+      .cover { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="preview" id="preview">
+      <div class="world">
+        <div class="scene">
+          <div class="shadow anim"></div>
+
+          <div class="hinge left anim">
+            <svg class="anim" viewBox="0 0 96 96" width="384" height="384" aria-hidden="true">
+              <path d="M14 30V76C30 74 42 75 48 80V34C42 29 30 28 14 30Z" fill="#E7F0F8"/>
+              <path d="M48 30C42 25 32 24 20 25V71C32 70 42 71 48 76V30Z" fill="#F9FAFB"/>
+              <path d="M46.7567 29.0592C47.1883 29.3557 47.6029 29.6691 48 30V31.4082M43.0985 27.0973C42.1649 26.711 41.1806 26.3754 40.149 26.0871M36.0819 25.2238C35.0817 25.0702 34.0486 24.9494 32.9849 24.8592M28.8304 24.6594C27.8122 24.6442 26.7718 24.6512 25.7109 24.6788M21.5568 24.8809C21.0418 24.9167 20.5228 24.9564 20 25V26.4082M20 30.1633V32.9796M20 36.7347V39.551M20 43.3061V46.1224M20 49.8776V52.6939M20 56.449V59.2653M20 63.0204V65.8367M20 69.5918V71C20.5228 70.9564 21.0418 70.9167 21.5568 70.8809M25.7109 70.6788C26.7718 70.6512 27.8122 70.6442 28.8304 70.6594M32.9849 70.8592C34.0486 70.9494 35.0817 71.0702 36.0819 71.2238M40.149 72.0871C41.1806 72.3754 42.1649 72.7109 43.0985 73.0973M46.7567 75.0592C47.1883 75.3557 47.6029 75.6691 48 76V74.5918M48 70.8367V68.0204M48 64.2653V61.449M48 57.6939V54.8776M48 51.1225V48.3061M48 44.551V41.7347M48 37.9796V35.1633" fill="none" stroke="#5A94CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M27 37H41" stroke="#A1C2E2" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M27 45H38" stroke="#A1C2E2" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="hinge right anim">
+            <svg class="anim" viewBox="0 0 96 96" width="384" height="384" aria-hidden="true">
+              <path d="M48 34V80C54 75 66 74 82 76V30C66 28 54 29 48 34Z" fill="#E7F0F8"/>
+              <path d="M48 30C54 25 64 24 76 25V71C64 70 54 71 48 76V30Z" fill="#F9FAFB"/>
+              <path d="M48 31.4082V30C48.3971 29.6691 48.8117 29.3557 49.2433 29.0592M48 35.1633V37.9796M48 41.7347V44.551M48 48.3061V51.1224M48 54.8776V57.6939M48 61.449V64.2653M48 68.0204V70.8367M48 74.5918V76C48.3971 75.6691 48.8117 75.3557 49.2433 75.0592M52.9015 73.0973C53.8351 72.7109 54.8194 72.3754 55.851 72.0871M59.9181 71.2238C60.9183 71.0702 61.9514 70.9494 63.0151 70.8592M67.1696 70.6594C68.1878 70.6442 69.2282 70.6512 70.2891 70.6788M74.4432 70.8809C74.9582 70.9167 75.4772 70.9564 76 71V69.5918M76 65.8367V63.0204M76 59.2653V56.449M76 52.6939V49.8776M76 46.1225V43.3061M76 39.551V36.7347M76 32.9796V30.1633M76 26.4082V25C75.4772 24.9564 74.9582 24.9167 74.4432 24.8809M70.2891 24.6788C69.2282 24.6512 68.1878 24.6442 67.1696 24.6594M63.0151 24.8592C61.9514 24.9494 60.9183 25.0702 59.9181 25.2238M55.851 26.0871C54.8194 26.3754 53.8351 26.7109 52.9015 27.0973" fill="none" stroke="#5A94CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M55 37H69" stroke="#A1C2E2" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M55 45H66" stroke="#A1C2E2" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <svg class="layer spine anim" viewBox="0 0 96 96" width="384" height="384" aria-hidden="true">
+            <path d="M48 31V75" stroke="#A1C2E2" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+
+          <svg class="layer cover anim" viewBox="0 0 96 96" width="384" height="384" aria-hidden="true">
+            <path d="M50 26.4H65.2C66.1 26.4 66.8 27.2 66.8 28.2V70.6C66.8 71.5 66 72.2 65 72.2H54.5V27.2Z" fill="#E7F0F8"/>
+            <path d="M32.2 23.6H58.4C60.1 23.6 61.4 24.9 61.4 26.6V69.2C61.4 70.9 60.1 72.2 58.4 72.2H32.2C30.5 72.2 29.2 70.9 29.2 69.2V26.6C29.2 24.9 30.5 23.6 32.2 23.6Z" fill="#F9FAFB" stroke="#5A94CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2.82 3.76"/>
+            <path d="M36.2 28.4V68.2" stroke="#A1C2E2" stroke-width="2" stroke-linecap="round"/>
+            <path d="M41 38H52.5" stroke="#A1C2E2" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M41 46H49" stroke="#A1C2E2" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <svg class="badge" viewBox="0 0 96 96" width="384" height="384" aria-hidden="true">
+        <path d="M70 86C77.732 86 84 79.732 84 72C84 64.268 77.732 58 70 58C62.268 58 56 64.268 56 72C56 79.732 62.268 86 70 86Z" fill="#E7F0F8" stroke="#1366B6" stroke-width="2"/>
+        <path d="M70 66.5V72M70 72V77.5M70 72H64.5M70 72H75.5" stroke="#1366B6" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <button type="button" id="replay">Replay</button>
+  </div>
+
+  <script>
+    function replay() {
+      if (document.documentElement.dataset.freeze) return;
+      document.querySelectorAll('.anim').forEach((el) => {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = '';
+      });
+    }
+
+    document.getElementById('replay').addEventListener('click', replay);
+    document.getElementById('preview').addEventListener('click', replay);
+  </script>
+</body>
+</html>
