@@ -463,6 +463,10 @@
   }
 }
 
+.proto-know-icon svg {
+  transform: translateX(-1px);
+}
+
 .proto-nav-btn:hover:not(.is-active) .proto-know-icon .proto-know-star {
   animation: proto-ask-ai-draw 220ms ease-out both;
 }
