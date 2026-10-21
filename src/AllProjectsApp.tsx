@@ -323,13 +323,13 @@ const TWIN_BRAIN_CX = 296.15;
 const TWIN_BRAIN_CY = 133.51;
 
 const TWIN_SATS = [
-  {id: 'doc', left: 17.24, top: 53.41, width: 58.37, height: 80.79, src: `${ICONS}/twin/doc.svg`},
-  {id: 'pdf', left: 97.9, top: 32.53, width: 33.22, height: 45.98, src: `${ICONS}/twin/pdf.svg`},
-  {id: 'contract', left: 97.9, top: 160.06, width: 50.26, height: 62.38, src: `${ICONS}/twin/contract.svg`},
-  {id: 'folder-sm', left: 448.08, top: 11.77, width: 32.13, height: 24.35, src: `${ICONS}/twin/folder-sm.svg`},
-  {id: 'folder-lg', left: 494.29, top: 57.65, width: 42.86, height: 32.46, src: `${ICONS}/twin/folder-lg.svg`},
-  {id: 'message-1', left: 472.91, top: 120.41, width: 95.79, height: 43.51, src: `${ICONS}/twin/message-1.svg`},
-  {id: 'message-2', left: 423.43, top: 179.49, width: 81.43, height: 36.98, src: `${ICONS}/twin/message-2.svg`},
+  {id: 'doc', left: 30.02, top: 60.35, width: 48.5, height: 66.83, src: `${ICONS}/twin/doc.svg`},
+  {id: 'pdf', left: 104.59, top: 24.82, width: 39.88, height: 54.95, src: `${ICONS}/twin/pdf.svg`},
+  {id: 'contract', left: 104.59, top: 177.24, width: 60.33, height: 74.55, src: `${ICONS}/twin/contract.svg`},
+  {id: 'folder-sm', left: 394.98, top: 0, width: 38.57, height: 29.1, src: `${ICONS}/twin/folder-sm.svg`},
+  {id: 'folder-lg', left: 433.54, top: 52.3, width: 51.45, height: 38.79, src: `${ICONS}/twin/folder-lg.svg`},
+  {id: 'message-1', left: 456.87, top: 129.86, width: 105.9, height: 52, src: `${ICONS}/twin/message-1.svg`},
+  {id: 'message-2', left: 414.25, top: 200.47, width: 97.75, height: 44.2, src: `${ICONS}/twin/message-2.svg`},
 ];
 
 const CONNECTORS = [
@@ -594,14 +594,26 @@ type FigmaNavPart = {
   group?: string;
 };
 
+const KNOWLEDGE_NAV_BOOK =
+  'M4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5ZM4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20';
+const KNOWLEDGE_NAV_STAR =
+  'M12 13.8302L10.6255 11.2775L8.16 9.99019L10.7127 8.69201L12 6.13929L13.2873 8.63747L15.84 9.99019L13.3964 11.2775L12 13.8302Z';
+
 const FIGMA_NAV_ICONS: Record<
-  'graduation-cap' | 'area-chart' | 'telescope' | 'layout-list',
+  'knowledge' | 'area-chart' | 'telescope' | 'layout-list',
   {viewBox: string; strokeWidth: number; d?: string; parts?: FigmaNavPart[]}
 > = {
-  'graduation-cap': {
-    viewBox: '0 0 14.8435 10.8335',
-    strokeWidth: 1.237,
-    d: 'M14.0827 4.0835V8.0835M3.41602 5.75016V8.0835C3.41602 8.61393 3.83744 9.12264 4.58759 9.49771C5.33773 9.87278 6.35515 10.0835 7.41602 10.0835C8.47688 10.0835 9.4943 9.87278 10.2444 9.49771C10.9946 9.12264 11.416 8.61393 11.416 8.0835V5.75016M13.6959 4.69824C13.8152 4.64559 13.9165 4.55908 13.9872 4.44944C14.0578 4.3398 14.0948 4.21183 14.0934 4.0814C14.0921 3.95096 14.0525 3.82379 13.9796 3.71563C13.9067 3.60747 13.8036 3.52308 13.6832 3.4729L7.96921 0.870238C7.79551 0.791004 7.60681 0.75 7.41588 0.75C7.22496 0.75 7.03626 0.791004 6.86255 0.870238L1.14921 3.47024C1.03053 3.52222 0.929559 3.60766 0.858659 3.71612C0.787759 3.82457 0.75 3.95133 0.75 4.08091C0.75 4.21048 0.787759 4.33724 0.858659 4.44569C0.929559 4.55415 1.03053 4.63959 1.14921 4.69157L6.86255 7.2969C7.03626 7.37614 7.22496 7.41714 7.41588 7.41714C7.60681 7.41714 7.79551 7.37614 7.96921 7.2969L13.6959 4.69824Z',
+  knowledge: {
+    viewBox: '0 0 24 24',
+    strokeWidth: 2,
+    parts: [
+      {d: KNOWLEDGE_NAV_BOOK},
+      {
+        d: KNOWLEDGE_NAV_STAR,
+        className: 'proto-know-star proto-stroke-icon__path',
+        draw: true,
+      },
+    ],
   },
   'area-chart': {
     viewBox: '0 0 13.5 13.5',
@@ -654,7 +666,7 @@ function FigmaNavIcon({name}: {name: keyof typeof FIGMA_NAV_ICONS}): ReactElemen
     <span
       className={clsx(
         'proto-stroke-icon',
-        name === 'graduation-cap' && 'proto-cap-icon',
+        name === 'knowledge' && 'proto-know-icon',
         name === 'telescope' && 'proto-opp-icon',
       )}
       style={{width: 16, height: 16}}
@@ -2451,22 +2463,24 @@ function TwinArt(): ReactElement {
           <TwinSatellite key={item.id} item={item} index={index} />
         ))}
       </div>
-      <img className="twin-art__halo" src={assets.twinHalo} alt="" width={213.02} height={219.92} />
-      <img className="twin-art__mid" src={assets.twinMid} alt="" width={189.87} height={196.77} />
-      <img className="twin-art__well" src={assets.twinEmpty} alt="" width={166.74} height={173.57} />
-      <span className="twin-art__fill">
-        <img src={assets.twinFill} alt="" width={164.74} height={171.57} />
-      </span>
-      <img className="twin-art__stroke" src={assets.twinStroke} alt="" width={166.74} height={173.57} />
-      {TWIN_CIRCUIT.map((piece, index) => (
-        <img
-          key={`${piece.inset}-${index}`}
-          className="twin-art__circuit"
-          src={piece.src}
-          alt=""
-          style={{inset: piece.inset}}
-        />
-      ))}
+      <div className="twin-art__brain">
+        <img className="twin-art__halo" src={assets.twinHalo} alt="" width={213.02} height={219.92} />
+        <img className="twin-art__mid" src={assets.twinMid} alt="" width={189.87} height={196.77} />
+        <img className="twin-art__well" src={assets.twinEmpty} alt="" width={166.74} height={173.57} />
+        <span className="twin-art__fill">
+          <img src={assets.twinFill} alt="" width={164.74} height={171.57} />
+        </span>
+        <img className="twin-art__stroke" src={assets.twinStroke} alt="" width={166.74} height={173.57} />
+        {TWIN_CIRCUIT.map((piece, index) => (
+          <img
+            key={`${piece.inset}-${index}`}
+            className="twin-art__circuit"
+            src={piece.src}
+            alt=""
+            style={{inset: piece.inset}}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -2511,16 +2525,14 @@ function DigitalTwinPage({onHome}: {onHome: () => void}): ReactElement {
         <div className="onboard__content">
           <TwinArt />
           <div className="onboard__copy twin-copy">
-            <h1 className="onboard__title twin-title">All set, John!</h1>
+            <h1 className="onboard__title twin-title">
+              Building <span className="twin-title__name">&lt;Configuration name&gt;</span>...
+            </h1>
             <p className="onboard__desc twin-desc">
-              These documents is now turning into your Digital Twin — a working copy of your playbook
-              and the judgement behind it — and review against it in the Word plugin. You can keep
-              teaching it as you go.
+              We&apos;re reading through what you uploaded to set up your rules and approved claims.
+              This usually takes a few minutes.
             </p>
           </div>
-          <button className="onboard__cta twin-cta" type="button" onClick={onHome}>
-            Get started
-          </button>
         </div>
       </div>
     </div>
@@ -2794,7 +2806,7 @@ export default function AllProjectsApp(): ReactElement {
               type="button"
               onClick={() => setView('knowledge')}
             >
-              <FigmaNavIcon name="graduation-cap" />
+              <FigmaNavIcon name="knowledge" />
               <span className="proto-nav-btn__label">Knowledge</span>
             </button>
             <button
