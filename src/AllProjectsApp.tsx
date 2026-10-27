@@ -10,6 +10,7 @@ import {
 } from 'react';
 import FileIconsPage from './FileIconsPage';
 import FilePickerPage from './FilePickerPage';
+import ProjectEmpty, {emptyIcons} from './ProjectEmpty';
 import TemplateStates from './TemplateStates';
 
 function clsx(...parts: Array<string | false | null | undefined>) {
@@ -19,8 +20,7 @@ function clsx(...parts: Array<string | false | null | undefined>) {
 const ICONS = '/icons';
 
 type ProjectKind = 'general' | 'compliance' | 'ma' | 'litigation';
-type TypeFilter = 'favorites' | ProjectKind;
-type Ownership = 'all' | 'owned' | 'shared';
+type TypeFilter = 'favorites' | 'contracting' | ProjectKind;
 type ShellView =
   | 'note'
   | 'assistant'
@@ -41,6 +41,7 @@ type ShellView =
   | 'file-picker'
   | 'template-states'
   | 'projects'
+  | 'project-search'
   | 'chats'
   | 'configure'
   | 'prompt-libraries'
@@ -72,6 +73,7 @@ const VIEW_PATHS: Record<ShellView, string> = {
   'file-picker': '/file-picker',
   'template-states': '/template-states',
   projects: '/projects',
+  'project-search': '/projects/no-results',
   chats: '/chat-history',
   configure: '/configure',
   'prompt-libraries': '/prompt-libraries',
@@ -104,15 +106,6 @@ type KnowledgeKind = 'contracts' | 'facts' | 'resources' | 'twin';
 type KnowledgeTab = 'active' | 'archived';
 type AppIconKind = ProjectKind | 'project2';
 
-type Project = {
-  id: string;
-  name: string;
-  type: ProjectKind;
-  owner: 'me' | 'shared';
-  favorite: boolean;
-  updatedAt: string;
-};
-
 type KnowledgeTable = {
   id: string;
   kind: KnowledgeKind;
@@ -121,30 +114,12 @@ type KnowledgeTable = {
   updatedAt: string;
 };
 
-const SEED_PROJECTS: Project[] = [
-  {id: 'p7', name: 'P7', type: 'general', owner: 'me', favorite: true, updatedAt: 'Updated just now'},
-  {id: 'jl', name: 'JL - Test', type: 'compliance', owner: 'me', favorite: false, updatedAt: 'Updated 1d ago'},
-  {id: 'rb', name: 'RB test', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 2d ago'},
-  {id: 'm1', name: 'Project 2', type: 'ma', owner: 'me', favorite: true, updatedAt: 'Updated yesterday'},
-  {id: 'm2', name: 'Northstar diligence', type: 'ma', owner: 'me', favorite: false, updatedAt: 'Updated 3d ago'},
-  {id: 'm3', name: 'Horizon merger', type: 'ma', owner: 'shared', favorite: false, updatedAt: 'Updated 6d ago'},
-  {id: 'm4', name: 'Carve-out playbook', type: 'ma', owner: 'me', favorite: false, updatedAt: 'Updated 2w ago'},
-  {id: 'm5', name: 'Bid strategy', type: 'ma', owner: 'shared', favorite: false, updatedAt: 'Updated 9d ago'},
-  {id: 'm6', name: 'Integration tracker', type: 'ma', owner: 'me', favorite: false, updatedAt: 'Updated 4d ago'},
-  {id: 'l1', name: 'Smith v. Acme', type: 'litigation', owner: 'me', favorite: true, updatedAt: 'Updated 1d ago'},
-  {id: 'l2', name: 'Patent dispute 2025', type: 'litigation', owner: 'shared', favorite: false, updatedAt: 'Updated 4d ago'},
-  {id: 'l3', name: 'Deposition prep', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 2d ago'},
-  {id: 'l4', name: 'Expert report review', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 1w ago'},
-  {id: 'l5', name: 'Motion to dismiss', type: 'litigation', owner: 'shared', favorite: false, updatedAt: 'Updated 5d ago'},
-  {id: 'l6', name: 'Discovery tracker', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 3d ago'},
-  {id: 'l7', name: 'Trial war room', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 6d ago'},
-  {id: 'l8', name: 'Settlement analysis', type: 'litigation', owner: 'shared', favorite: false, updatedAt: 'Updated 2w ago'},
-  {id: 'l9', name: 'Privilege log', type: 'litigation', owner: 'me', favorite: false, updatedAt: 'Updated 8d ago'},
-];
-
-function Icon({src, size}: {src: string; size: number}) {
+function Icon({src, size, className}: {src: string; size?: number; className?: string}) {
   return (
-    <span className="proto-icon" style={{width: size, height: size}}>
+    <span
+      className={clsx('proto-icon', className)}
+      style={size != null ? {width: size, height: size} : undefined}
+    >
       <img src={src} alt="" />
     </span>
   );
@@ -190,7 +165,15 @@ function AskAiIcon(): ReactElement {
   );
 }
 
-function AppIcon({kind, size = 20}: {kind: AppIconKind; size?: number}) {
+function AppIcon({
+  kind,
+  size,
+  className,
+}: {
+  kind: AppIconKind;
+  size?: number;
+  className?: string;
+}) {
   const map: Record<AppIconKind, {bg: string; glyph: string}> = {
     general: {bg: assets.generalBg, glyph: assets.generalGlyph},
     compliance: {bg: assets.complianceBg, glyph: assets.complianceGlyph},
@@ -199,10 +182,11 @@ function AppIcon({kind, size = 20}: {kind: AppIconKind; size?: number}) {
     project2: {bg: assets.project2Bg, glyph: assets.project2Glyph},
   };
   const {bg, glyph} = map[kind];
+  const box = size ?? (className ? undefined : 20);
   return (
     <span
-      className={clsx('proto-app-icon', `proto-app-icon--${kind}`)}
-      style={{width: size, height: size}}
+      className={clsx('proto-app-icon', `proto-app-icon--${kind}`, className)}
+      style={box != null ? {width: box, height: box} : undefined}
     >
       <img className="proto-app-icon__bg" src={bg} alt="" />
       <span className="proto-app-icon__glyph-wrap">
@@ -809,89 +793,6 @@ function EmptyTile({
   );
 }
 
-const EMPTY_TILES: Array<{
-  className: string;
-  size: number;
-  kind: AppIconKind;
-  bg: keyof typeof assets;
-  glyph: keyof typeof assets;
-  left: string;
-  top: string;
-}> = [
-  {
-    className: 'proto-float proto-float--lg',
-    size: 36,
-    kind: 'general' as const,
-    bg: 'emptyGeneralLgBg',
-    glyph: 'emptyGeneralLgGlyph',
-    left: '20.6%',
-    top: '32.6%',
-  },
-  {
-    className: 'proto-float proto-float--sm',
-    size: 23,
-    kind: 'general' as const,
-    bg: 'emptyGeneralSmBg',
-    glyph: 'emptyGeneralSmGlyph',
-    left: '75%',
-    top: '57.1%',
-  },
-  {
-    className: 'proto-float proto-float--sm',
-    size: 23,
-    kind: 'compliance' as const,
-    bg: 'emptyComplianceSmBg',
-    glyph: 'emptyComplianceSmGlyph',
-    left: '24.7%',
-    top: '58.8%',
-  },
-  {
-    className: 'proto-float proto-float--sm',
-    size: 23,
-    kind: 'litigation' as const,
-    bg: 'emptyLitigationSmBg',
-    glyph: 'emptyLitigationSmGlyph',
-    left: '62.5%',
-    top: '28.6%',
-  },
-  {
-    className: 'proto-float proto-float--lg',
-    size: 36,
-    kind: 'compliance' as const,
-    bg: 'emptyComplianceLgBg',
-    glyph: 'emptyComplianceLgGlyph',
-    left: '73.9%',
-    top: '24.7%',
-  },
-  {
-    className: 'proto-float proto-float--lg',
-    size: 36,
-    kind: 'litigation' as const,
-    bg: 'emptyLitigationLgBg',
-    glyph: 'emptyLitigationLgGlyph',
-    left: '30.8%',
-    top: '65.4%',
-  },
-  {
-    className: 'proto-float proto-float--lg',
-    size: 36,
-    kind: 'ma' as const,
-    bg: 'emptyMaLgBg',
-    glyph: 'emptyMaLgGlyph',
-    left: '67.1%',
-    top: '63.6%',
-  },
-  {
-    className: 'proto-float proto-float--sm',
-    size: 23,
-    kind: 'ma' as const,
-    bg: 'emptyMaSmBg',
-    glyph: 'emptyMaSmGlyph',
-    left: '33.2%',
-    top: '20.6%',
-  },
-];
-
 const KNOWLEDGE_TILES = [
   {className: 'proto-float proto-float--lg', size: 36, left: '20.6%', top: '32.6%'},
   {className: 'proto-float proto-float--sm', size: 23, left: '75%', top: '57.1%'},
@@ -1088,6 +989,7 @@ const PLACEHOLDERS: Record<
   Exclude<
     ShellView,
     | 'projects'
+    | 'project-search'
     | 'knowledge'
     | 'opportunities'
     | 'horizon'
@@ -2610,13 +2512,9 @@ export default function AllProjectsApp(): ReactElement {
   const [knowledgeTab, setKnowledgeTab] = useState<KnowledgeTab>('active');
   const [knowledgeTables, setKnowledgeTables] = useState<KnowledgeTable[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
-  const [ownership, setOwnership] = useState<Ownership>('all');
-  const [query, setQuery] = useState('');
-  const [projects, setProjects] = useState<Project[]>(SEED_PROJECTS);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [draftName, setDraftName] = useState('');
   const [draftType, setDraftType] = useState<ProjectKind>('general');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [configureOpen, setConfigureOpen] = useState(true);
 
   const setView = useCallback((next: ShellView) => {
@@ -2643,28 +2541,6 @@ export default function AllProjectsApp(): ReactElement {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return projects.filter((project) => {
-      if (typeFilter === 'favorites' && !project.favorite) {
-        return false;
-      }
-      if (typeFilter !== 'favorites' && project.type !== typeFilter) {
-        return false;
-      }
-      if (ownership === 'owned' && project.owner !== 'me') {
-        return false;
-      }
-      if (ownership === 'shared' && project.owner !== 'shared') {
-        return false;
-      }
-      if (q && !project.name.toLowerCase().includes(q)) {
-        return false;
-      }
-      return true;
-    });
-  }, [ownership, projects, query, typeFilter]);
-
   const visibleTables = useMemo(() => {
     const archived = knowledgeTab === 'archived';
     return knowledgeTables.filter(
@@ -2684,28 +2560,19 @@ export default function AllProjectsApp(): ReactElement {
 
   const openCreate = () => {
     setDraftName('');
-    setDraftType(typeFilter === 'favorites' ? 'general' : typeFilter);
+    setDraftType(
+      view === 'project-search' || typeFilter === 'favorites' || typeFilter === 'contracting'
+        ? 'general'
+        : typeFilter,
+    );
     setDialogOpen(true);
   };
 
   const createProject = () => {
-    const name = draftName.trim();
-    if (!name) {
+    if (!draftName.trim()) {
       return;
     }
-    const next: Project = {
-      id: `new-${Date.now()}`,
-      name,
-      type: draftType,
-      owner: 'me',
-      favorite: typeFilter === 'favorites',
-      updatedAt: 'Updated just now',
-    };
-    setProjects((current) => [next, ...current]);
     setTypeFilter(draftType);
-    setOwnership('all');
-    setQuery('');
-    setSelectedId(next.id);
     setDialogOpen(false);
     setView('projects');
   };
@@ -2724,21 +2591,25 @@ export default function AllProjectsApp(): ReactElement {
     setSelectedTableId(next.id);
   };
 
-  const toggleFavorite = (id: string) => {
-    setProjects((current) =>
-      current.map((project) =>
-        project.id === id ? {...project, favorite: !project.favorite} : project,
-      ),
-    );
-  };
-
   const typeLabel: Record<TypeFilter, string> = {
     favorites: 'Favorites',
-    general: 'General projects',
+    general: 'General project',
     compliance: 'Compliance',
+    contracting: 'Contracting',
     ma: 'M&A',
     litigation: 'Litigation',
   };
+  const projectTypes: TypeFilter[] = [
+    'favorites',
+    'general',
+    'compliance',
+    'contracting',
+    'ma',
+    'litigation',
+  ];
+  const blocksDescription =
+    'Create a project to organize documents, chats, and reviews in one place.';
+  const showingSearch = view === 'project-search';
 
   const goHome = () => setView('projects');
 
@@ -2849,12 +2720,12 @@ export default function AllProjectsApp(): ReactElement {
 
           <div className="proto-nav-group">
             <button
-              className={clsx('proto-nav-btn', view === 'projects' && 'is-active')}
+              className={clsx(
+                'proto-nav-btn',
+                (view === 'projects' || view === 'project-search') && 'is-active',
+              )}
               type="button"
-              onClick={() => {
-                setSelectedId(null);
-                setView('projects');
-              }}
+              onClick={() => setView('projects')}
             >
               <FigmaNavIcon name="layout-list" />
               <span className="proto-nav-btn__label">All projects</span>
@@ -3025,166 +2896,136 @@ export default function AllProjectsApp(): ReactElement {
       </aside>
 
       <main className="proto-main">
-        {view === 'projects' ? (
+        {view === 'projects' || view === 'project-search' ? (
           <div className="proto-card">
-            <header className="proto-page-header">
+            <header className="proto-page-header proto-page-header--projects">
               <h1 className="proto-page-title">All your projects</h1>
             </header>
-            <div className="proto-body">
-              <div className="proto-split">
-                <nav className="proto-types" aria-label="Project type">
+            <div className="proto-body proto-body--projects">
+              <div className="proto-split proto-split--flat">
+                <nav className="proto-types proto-types--projects" aria-label="Project type">
                   <div className="proto-types__header">
                     <p>Type</p>
                   </div>
                   <div className="proto-types__list">
+                    {projectTypes.map((id) => (
+                      <button
+                        key={id}
+                        className={clsx(
+                          'proto-type-btn',
+                          !showingSearch && typeFilter === id && 'is-active',
+                        )}
+                        type="button"
+                        onClick={() => {
+                          setTypeFilter(id);
+                          setView('projects');
+                        }}
+                      >
+                        {id === 'favorites' ? (
+                          <Icon src={emptyIcons.star} className="proto-type-btn__icon" />
+                        ) : id === 'contracting' ? (
+                          <Icon src={emptyIcons.contracting} className="proto-type-btn__icon" />
+                        ) : (
+                          <AppIcon kind={id} className="proto-type-btn__icon" />
+                        )}
+                        <span className="proto-type-btn__label">{typeLabel[id]}</span>
+                        <span className="proto-type-btn__badge">23</span>
+                      </button>
+                    ))}
                     <button
-                      className={clsx('proto-type-btn', typeFilter === 'favorites' && 'is-active')}
+                      className={clsx('proto-type-btn', showingSearch && 'is-active')}
                       type="button"
-                      onClick={() => setTypeFilter('favorites')}
+                      onClick={() => setView('project-search')}
                     >
-                      <Icon src={assets.star} size={16} />
-                      <span className="proto-type-btn__label">Favorites</span>
-                    </button>
-                    <button
-                      className={clsx('proto-type-btn', typeFilter === 'general' && 'is-active')}
-                      type="button"
-                      onClick={() => setTypeFilter('general')}
-                    >
-                      <AppIcon kind="general" />
-                      <span className="proto-type-btn__label">General projects</span>
-                    </button>
-                    <button
-                      className={clsx('proto-type-btn', typeFilter === 'compliance' && 'is-active')}
-                      type="button"
-                      onClick={() => setTypeFilter('compliance')}
-                    >
-                      <AppIcon kind="compliance" />
-                      <span className="proto-type-btn__label">Compliance</span>
-                    </button>
-                    <button
-                      className={clsx('proto-type-btn', typeFilter === 'ma' && 'is-active')}
-                      type="button"
-                      onClick={() => setTypeFilter('ma')}
-                    >
-                      <AppIcon kind="ma" />
-                      <span className="proto-type-btn__label">M&A</span>
-                    </button>
-                    <button
-                      className={clsx('proto-type-btn', typeFilter === 'litigation' && 'is-active')}
-                      type="button"
-                      onClick={() => setTypeFilter('litigation')}
-                    >
-                      <AppIcon kind="litigation" />
-                      <span className="proto-type-btn__label">Litigation</span>
+                      <span className="proto-type-btn__label">No Results Search</span>
+                      <span className="proto-type-btn__badge">23</span>
                     </button>
                   </div>
                 </nav>
 
-                <section className="proto-workspace">
-                  <div className="proto-workspace__header">
-                    <div className="proto-workspace__tabs-wrap">
-                      <div className="proto-tabs" role="tablist" aria-label="Ownership">
-                        <button
-                          className={clsx('proto-tab', ownership === 'all' && 'is-active')}
-                          type="button"
-                          onClick={() => setOwnership('all')}
-                        >
-                          All
+                <section className="proto-workspace proto-workspace--panel">
+                  {showingSearch ? (
+                    <div className="proto-actionbar">
+                      <div className="proto-actionbar__group">
+                        <button className="proto-btn proto-btn--quiet" type="button">
+                          Owner: All
+                          <Icon src={emptyIcons.chevron} size={16} />
                         </button>
-                        <button
-                          className={clsx('proto-tab', ownership === 'owned' && 'is-active')}
-                          type="button"
-                          onClick={() => setOwnership('owned')}
-                        >
-                          <Icon src={assets.archive} size={16} />
-                          Owned by me
+                        <button className="proto-btn proto-btn--quiet" type="button">
+                          Shared: All
+                          <Icon src={emptyIcons.chevron} size={16} />
                         </button>
-                        <button
-                          className={clsx('proto-tab', ownership === 'shared' && 'is-active')}
-                          type="button"
-                          onClick={() => setOwnership('shared')}
-                        >
-                          Shared with me
+                      </div>
+                      <div className="proto-actionbar__group">
+                        <label className="proto-search proto-search--lg">
+                          <Icon src={emptyIcons.search} size={16} />
+                          <input
+                            readOnly
+                            value="Merger agreement"
+                            aria-label="Search projects"
+                          />
+                        </label>
+                        <button className="proto-btn proto-btn--lg" type="button" onClick={openCreate}>
+                          <Icon src={emptyIcons.plus} size={16} />
+                          Project
                         </button>
                       </div>
                     </div>
-                    <div className="proto-actions">
-                      {visible.length > 0 || query.trim() ? (
-                        <>
-                          <label className="proto-search">
-                            <Icon src={assets.search} size={16} />
-                            <input
-                              type="search"
-                              placeholder="Search"
-                              value={query}
-                              onChange={(event) => setQuery(event.target.value)}
-                              aria-label="Search projects"
-                            />
-                          </label>
-                          <button className="proto-btn" type="button" onClick={openCreate}>
-                            <Icon src={assets.plus} size={16} />
-                            Project
-                          </button>
-                        </>
-                      ) : null}
-                    </div>
-                  </div>
-
+                  ) : null}
                   <div className="proto-workspace__body">
-                    {visible.length === 0 ? (
-                      <EmptyCanvas
-                        key={`${typeFilter}-${ownership}-${query}`}
-                        burst={typeFilter === 'compliance'}
-                        title="No projects found"
-                        ctaLabel="Project"
-                        tiles={EMPTY_TILES}
-                        onCreate={openCreate}
-                      />
-                    ) : (
-                      <div className="proto-list">
-                        {visible.map((project) => (
-                          <div
-                            key={project.id}
-                            className="proto-list-row"
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => setSelectedId(project.id)}
-                            onKeyDown={(event) => {
-                              if (event.key === 'Enter' || event.key === ' ') {
-                                event.preventDefault();
-                                setSelectedId(project.id);
-                              }
+                    <ProjectEmpty
+                      key={showingSearch ? 'search' : typeFilter}
+                      projectType={typeFilter === 'favorites' ? 'general' : typeFilter}
+                      kind={
+                        showingSearch ? 'search' : typeFilter === 'favorites' ? 'favorites' : 'blocks'
+                      }
+                      title={
+                        showingSearch
+                          ? 'No projects found'
+                          : typeFilter === 'favorites'
+                            ? 'No favorites yet'
+                            : typeFilter === 'general'
+                              ? 'No general projects yet'
+                              : `No ${typeLabel[typeFilter].toLowerCase()} projects yet`
+                      }
+                      description={
+                        showingSearch
+                          ? 'We couldn’t find any projects matching "Merger agreement". Check the spelling or try a different keyword.'
+                          : typeFilter === 'favorites'
+                            ? 'Star a project to keep it here for quick access.'
+                            : blocksDescription
+                      }
+                      action={
+                        showingSearch ? (
+                          <button
+                            className="proto-btn proto-btn--quiet"
+                            type="button"
+                            onClick={() => {
+                              setTypeFilter('general');
+                              setView('projects');
                             }}
-                            style={
-                              selectedId === project.id
-                                ? {background: 'var(--base-sec-sidebar-active)'}
-                                : undefined
-                            }
                           >
-                            <AppIcon kind={project.type} />
-                            <span className="proto-list-row__name">{project.name}</span>
-                            <span className="proto-list-row__meta">
-                              {project.owner === 'me' ? 'John Doe' : 'Shared'}
-                            </span>
-                            <span className="proto-list-row__meta">{project.updatedAt}</span>
-                            <button
-                              className={clsx('proto-star', project.favorite && 'is-on')}
-                              type="button"
-                              aria-label={
-                                project.favorite ? 'Remove from favorites' : 'Add to favorites'
-                              }
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                toggleFavorite(project.id);
-                              }}
-                            >
-                              <Icon src={assets.star} size={16} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
+                            Clear search
+                          </button>
+                        ) : typeFilter === 'favorites' ? (
+                          <button
+                            className="proto-btn proto-btn--quiet"
+                            type="button"
+                            onClick={() => {
+                              setTypeFilter('general');
+                              setView('projects');
+                            }}
+                          >
+                            View all projects
+                          </button>
+                        ) : (
+                          <button className="proto-btn proto-btn--lg" type="button" onClick={openCreate}>
+                            <Icon src={emptyIcons.plus} size={16} />
+                            New project
+                          </button>
+                        )
+                      }
+                    />
                     {dialogOpen && (
                       <div className="proto-overlay" onClick={() => setDialogOpen(false)}>
                         <form

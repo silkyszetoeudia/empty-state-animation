@@ -1,0 +1,22 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="106.302" height="96" viewBox="0 0 106.302 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Illustration / Building blocks">
+<rect id="Base / Left" x="7.6001" y="78.6916" width="97.7023" height="9.80916" rx="2.78669" fill="#A1C2E2" stroke="#1366B6" stroke-width="2" stroke-linejoin="round"/>
+<rect id="Pillar / Left" x="14.1765" y="48.5959" width="16.0514" height="30.0963" rx="2.78669" fill="#F9FAFB" stroke="#1366B6" stroke-width="2" stroke-linejoin="round"/>
+<rect id="Pillar / Right" x="52.6331" y="48.5959" width="15.8284" height="30.0963" rx="2.78669" fill="#F9FAFB" stroke="#1366B6" stroke-width="2" stroke-linejoin="round"/>
+<path id="Arch" d="M14.1765 33.66C14.1765 32.1209 15.4242 30.8733 16.9632 30.8733H65.6746C67.2137 30.8733 68.4613 32.1209 68.4613 33.66V45.1412C68.4613 46.6802 67.2137 47.9278 65.6746 47.9278H55.8655C54.3264 47.9278 53.1128 46.6624 52.7531 45.166C51.5118 40.0016 46.8661 36.168 41.3189 36.168C35.7717 36.168 31.126 40.0016 29.8847 45.166C29.525 46.6624 28.3114 47.9278 26.7724 47.9278H16.9632C15.4242 47.9278 14.1765 46.6802 14.1765 45.1412V33.66Z" fill="#D0E0F0" stroke-width="2" stroke-linejoin="round" stroke="#1366B6"/>
+<path id="Roof" d="M21.7572 30.8727C19.1643 30.8727 17.9768 27.6421 19.9522 25.9628L39.5141 9.3332C40.5547 8.44852 42.0832 8.44852 43.1239 9.3332L62.6858 25.9628C64.6612 27.6421 63.4736 30.8727 60.8808 30.8727H21.7572Z" fill="#F9FAFB" stroke-width="2" stroke-linejoin="round" stroke="#1366B6"/>
+<g id="ProjectAppIcon">
+<g clip-path="url(#clip0_0_78)">
+<rect x="69.4824" y="45.2441" width="32.3066" height="32.3066" rx="16.1533" fill="#D0E0F0"/>
+<g id="Sigma BG">
+</g>
+</g>
+<rect x="70.5246" y="46.2863" width="30.2223" height="30.2223" rx="15.1112" stroke="#1366B6" stroke-width="2.0843"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_78">
+<rect x="69.4824" y="45.2441" width="32.3066" height="32.3066" rx="16.1533" fill="white"/>
+</clipPath>
+</defs>
+</svg>
